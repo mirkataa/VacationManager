@@ -34,11 +34,20 @@ namespace VacationManager.Controllers
             }
 
             var project = await _context.Projects
+                .Include(p => p.Teams)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (project == null)
             {
                 return NotFound();
             }
+
+            // Get all teams that are not associated with any project & not Not in a team
+            var teamsNotAssigned = await _context.Teams
+                .Where(t => t.ProjectId == null && t.Id != 1)
+                .ToListAsync();
+
+            // Pass the list of unassigned teams to the view
+            ViewBag.TeamsNotAssigned = teamsNotAssigned;
 
             return View(project);
         }
@@ -147,6 +156,42 @@ namespace VacationManager.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        // Add/Delete team 
+
+        // POST: Projects/AddTeam
+        [HttpPost]
+        public async Task<IActionResult> AddTeam(int projectId, int teamId)
+        {
+            var project = await _context.Projects.Include(p => p.Teams).FirstOrDefaultAsync(p => p.Id == projectId);
+            var team = await _context.Teams.FindAsync(teamId);
+
+            if (project != null && team != null)
+            {
+                project.Teams.Add(team);
+                team.ProjectId = projectId;
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Details), new { id = projectId });
+        }
+
+        // POST: Projects/RemoveTeam
+        [HttpPost]
+        public async Task<IActionResult> RemoveTeam(int projectId, int teamId)
+        {
+            var project = await _context.Projects.Include(p => p.Teams).FirstOrDefaultAsync(p => p.Id == projectId);
+            var team = project?.Teams.FirstOrDefault(t => t.Id == teamId);
+
+            if (project != null && team != null)
+            {
+                project.Teams.Remove(team);
+                team.ProjectId = null;
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Details), new { id = projectId });
         }
 
         private bool ProjectExists(int id)
