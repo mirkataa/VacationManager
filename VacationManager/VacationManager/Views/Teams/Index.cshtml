@@ -1,0 +1,111 @@
+﻿@using VacationManager.Data
+@model IEnumerable<VacationManager.Models.TeamModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<form id="filterForm">
+    <div class="form-group">
+        <label for="teamNameFilter">Filter by Team Name:</label>
+        <input type="text" class="form-control" id="teamNameFilter">
+    </div>
+    <div class="form-group">
+        <label for="projectNameFilter">Filter by Project Name:</label>
+        <input type="text" class="form-control" id="projectNameFilter">
+    </div>
+    <button type="button" class="btn btn-primary" onclick="applyFilter()">Apply Filter</button>
+    <button type="button" class="btn btn-secondary" onclick="clearFilter()">Clear Filter</button>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                Project
+            </th>
+            <th>
+                Team Leader
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="teamTableBody">
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @{
+                        var context = ViewBag.Context as ApplicationDbContext;
+                        var project = context.Projects.FirstOrDefault(p => p.Id == item.ProjectId);
+                    }
+                    @if (project != null)
+                    {
+                        @project.Name
+                    }
+                    else
+                    {
+                        <span>No Project</span>
+                    }
+                </td>
+                <td>
+                    @{
+
+                        var teamLeader = context.Users.FirstOrDefault(u => u.Id == item.TeamLeaderId);
+                    }
+                    @if (teamLeader != null)
+                    {
+                        <span style="margin-right: 5px;">@teamLeader.FirstName</span>
+                        @teamLeader.LastName
+                    }
+                    else
+                    {
+                        <span>No Team Leader</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@section Scripts {
+    <script>
+        function applyFilter() {
+            var teamNameFilter = $('#teamNameFilter').val().toLowerCase();
+            var projectNameFilter = $('#projectNameFilter').val().toLowerCase();
+
+            $('#teamTableBody tr').each(function () {
+                var teamName = $(this).find('td:first').text().toLowerCase();
+                var projectName = $(this).find('td:nth-child(2)').text().toLowerCase();
+
+                if (teamName.includes(teamNameFilter) && projectName.includes(projectNameFilter)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        }
+
+        function clearFilter() {
+            $('#teamNameFilter').val('');
+            $('#projectNameFilter').val('');
+            $('#teamTableBody tr').show();
+        }
+    </script>
+}

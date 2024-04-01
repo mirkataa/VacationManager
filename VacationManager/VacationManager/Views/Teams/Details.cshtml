@@ -1,0 +1,81 @@
+﻿@model VacationManager.Models.TeamModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>TeamModel</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class="col-sm-2">
+            Project
+        </dt>
+        <dd class="col-sm-10">
+            @ViewData["ProjectName"]
+        </dd>
+        <dt class="col-sm-2">
+            Team Leader
+        </dt>
+        <dd class="col-sm-10">
+            @ViewData["TeamLeaderName"]
+        </dd>
+    </dl>
+</div>
+
+
+<h4>Team Members</h4>
+@if (Model.Developers != null && Model.Developers.Any())
+{
+    <ul>
+        @foreach (var user in Model.Developers)
+        {
+            <li>
+                <span style="margin-right: 5px;">@user.FirstName</span>
+                @user.LastName
+                @if (Model.Id != 1)
+                {
+                    <div style="display: inline-block;">
+                        <form asp-action="RemoveDeveloper" asp-controller="Teams" onsubmit="return confirm('Are you sure you want to remove this developer?');">
+                            <input type="hidden" name="teamId" value="@Model.Id" />
+                            <input type="hidden" name="userId" value="@user.Id" />
+                            <button type="submit" class="btn btn-link">Remove</button>
+                        </form>
+                    </div>
+                }
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>No team members found.</p>
+}
+
+@if (Model.Id != 1)
+{
+    <h4>Add Developer</h4>
+    <form asp-action="AddDeveloper" asp-controller="Teams">
+        <input type="hidden" name="teamId" value="@Model.Id" />
+        <select name="userId">
+            @foreach (var user in ViewBag.UnassignedUsers)
+            {
+                <option value="@user.Id">@user.FirstName @user.LastName</option>
+            }
+        </select>
+        <button type="submit">Add Developer</button>
+    </form>
+}
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
