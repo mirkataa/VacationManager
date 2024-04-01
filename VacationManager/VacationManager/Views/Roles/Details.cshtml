@@ -7,18 +7,31 @@
 <h1>Details</h1>
 
 <div>
-    <h4>RoleModel</h4>
+    <h4>Role: @Model.Name</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
+        <dt class="col-sm-2">Users:</dt>
+        <dd class="col-sm-10">
+            @foreach (var user in Model.Users)
+            {
+                <div>@user.FirstName @user.LastName</div>
+            }
         </dd>
     </dl>
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.Id" onclick="return confirmDeleteOrEdit('@Model.Name')">Edit</a> |
+        <a asp-action="Index">Back to List</a>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+@section Scripts {
+    <script>
+        function confirmDeleteOrEdit(roleName) {
+            if (roleName === "CEO" || roleName === "Developer" || roleName === "Team Lead" || roleName === "Unassigned") {
+                alert("This role cannot be deleted or edited.");
+                return false;
+            }
+            return true;
+        }
+    </script>
+}

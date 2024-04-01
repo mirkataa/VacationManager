@@ -35,6 +35,7 @@ namespace VacationManager.Controllers
             }
 
             var roleModel = await _context.Roles
+                .Include(r => r.Users)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (roleModel == null)
             {
