@@ -136,10 +136,6 @@ namespace VacationManager.Areas.Identity.Pages.Account
             .Select(r => new SelectListItem { Value = r.Id.ToString(), Text = r.Name })
             .ToList();
 
-            /*Teams = _dbContext.Teams
-                .Select(t => new SelectListItem { Value = t.Id.ToString(), Text = t.Name })
-                .ToList();*/
-
             Teams = await _dbContext.Teams.ToListAsync();
 
             ReturnUrl = returnUrl;
@@ -154,9 +150,6 @@ namespace VacationManager.Areas.Identity.Pages.Account
             Roles = _dbContext.Roles
                 .Select(r => new SelectListItem { Value = r.Id.ToString(), Text = r.Name })
                 .ToList();
-            /* Teams = _dbContext.Teams
-               .Select(t => new SelectListItem { Value = t.Id.ToString(), Text = t.Name })
-               .ToList();*/
 
             Teams = await _dbContext.Teams.ToListAsync();
 
@@ -174,8 +167,6 @@ namespace VacationManager.Areas.Identity.Pages.Account
                 // Check if the role corresponds to CEO
                 var isCEO = _dbContext.Roles.Any(r => r.Id == Input.RoleId && r.Name == "CEO");
 
-
-                // Create a new UserModel instance and populate it with additional data
                 var userModel = new UserModel
                 {
                     Username = Input.Username,
@@ -183,7 +174,6 @@ namespace VacationManager.Areas.Identity.Pages.Account
                     FirstName = Input.FirstName,
                     LastName = Input.LastName,
                     RoleId = Input.RoleId,
-                    //TeamId = Input.TeamId
                     TeamId = isCEO ? _dbContext.Teams.FirstOrDefault(t => t.Name == "Not in a team")?.Id ?? 0 : Input.TeamId
 
                 };
@@ -198,7 +188,6 @@ namespace VacationManager.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User created a new account with password.");
 
-                    // Save the UserModel data
                     _dbContext.Users.Add(userModel);
                     await _dbContext.SaveChangesAsync();
 

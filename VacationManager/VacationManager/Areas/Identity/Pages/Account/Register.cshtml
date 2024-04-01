@@ -104,10 +104,10 @@
             var roleDropdown = document.getElementById('Input_RoleId');
             var teamDropdown = document.getElementById('Input_TeamId');
             var teamDropdownDiv = document.getElementById('teamDropdownDiv');
-            var ceoRoleId = 1; // Insert the ID of the CEO role here
+            var ceoRoleId = 1; // ID of the CEO role
             var unassignedRoleId = 4;
-            var teamLeadRoleId = 3; // Insert the ID of the Team Lead role here
-            var notInTeamId = 1; // Insert the ID of "Not in a team" here
+            var teamLeadRoleId = 3; // ID of the Team Lead role 
+            var notInTeamId = 1; // ID of "Not in a team" 
             var a = teamDropdown.teamLeaderId
 
             // Function to update the team dropdown based on the selected role
@@ -117,14 +117,12 @@
                     teamDropdownDiv.style.display = 'none';
                     // Set the value of the TeamId input to "Not in a team"
                     document.getElementById('Input_TeamId').value = notInTeamId;
-                    console.log("CEO selected");
                 } else if (parseInt(roleId) === teamLeadRoleId) {
                     // Team Lead role is selected, filter out teams with a team lead
                     filterTeamsWithoutTeamLead();
                 } else {
                     // Another role is selected, show the full list of teams
                     showAllTeams();
-                    console.log("Another Role selected");
                 }
             }
 
@@ -132,27 +130,20 @@
             function filterTeamsWithoutTeamLead() {
                 // Get all options in the team dropdown
                 var options = teamDropdown.querySelectorAll('option');
-               /* options.forEach(function (option) {
-                    console.log(option);
-                })*/
+               
                 // Iterate over each option and hide teams with a team lead
-
                 options.forEach(function (option) {
                     var teamLeaderId = parseInt(option.dataset.teamLeaderId);
                     if (teamLeaderId != null || option.value === '1')
                     {
-                        console.log("Team Lead there is");
-
                         option.style.display = 'none';
                     } else {
-                        console.log("Team Lead there is NOT");
                         option.style.display = 'block';
                     }
                 });
 
                 // Show the team dropdown
                 teamDropdownDiv.style.display = 'block';
-                console.log("Team Lead selected");
             }
 
             // Function to show the full list of teams
@@ -160,14 +151,7 @@
 
                 // Get all options in the team dropdown
                 var options = teamDropdown.querySelectorAll('option');
-                // Get all options in the team dropdown except the "Not in a team" option
-                //var options = Array.from(teamDropdown.querySelectorAll('option')).filter(option => option.value !== '1');
-
-
-                // Iterate over each option and show them
-               /* options.forEach(function (option) {
-                    option.style.display = 'block';
-                });*/
+              
                 // Iterate over each option and show all teams except "Not in a team"
                 options.forEach(function (option) {
                     if (option.value !== '1') {
@@ -186,7 +170,6 @@
 
             // Event listener for changes in the role dropdown
             roleDropdown.addEventListener('change', function () {
-                // Call the function to update the team dropdown based on the selected role
                 updateTeamDropdown(this.value);
             });
         });
