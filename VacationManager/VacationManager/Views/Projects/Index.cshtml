@@ -9,6 +9,21 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+<form id="filterForm">
+    <div class="form-group">
+        <label for="projectNameFilter">Filter by Project Name:</label>
+        <input type="text" class="form-control" id="projectNameFilter">
+    </div>
+    <div class="form-group">
+        <label for="projectDescriptionFilter">Filter by Project Description:</label>
+        <input type="text" class="form-control" id="projectDescriptionFilter">
+    </div>
+    <button type="button" class="btn btn-primary" onclick="applyFilter()">Apply Filter</button>
+    <button type="button" class="btn btn-secondary" onclick="clearFilter()">Clear Filter</button>
+</form>
+
+
 <table class="table">
     <thead>
         <tr>
@@ -40,3 +55,29 @@
         }
     </tbody>
 </table>
+
+@section Scripts {
+    <script>
+        function applyFilter() {
+            var projectNameFilter = $('#projectNameFilter').val().toLowerCase();
+            var projectDescriptionFilter = $('#projectDescriptionFilter').val().toLowerCase();
+
+            $('tbody tr').each(function () {
+                var projectName = $(this).find('td:first').text().toLowerCase();
+                var projectDescription = $(this).find('td:nth-child(2)').text().toLowerCase();
+
+                if (projectName.includes(projectNameFilter) && projectDescription.includes(projectDescriptionFilter)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        }
+
+        function clearFilter() {
+            $('#projectNameFilter').val('');
+            $('#projectDescriptionFilter').val('');
+            $('tbody tr').show();
+        }
+    </script>
+}

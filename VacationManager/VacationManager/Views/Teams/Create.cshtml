@@ -20,7 +20,6 @@
             <div class="form-group">
                 <label asp-for="ProjectId" class="control-label">Project</label>
                 <select asp-for="ProjectId" class="form-control">
-                    <option value="">-- Select Project --</option>
                     @foreach (var project in ViewBag.Projects)
                     {
                         <option value="@project.Value">@project.Text</option>
@@ -31,7 +30,6 @@
             <div class="form-group">
                 <label asp-for="TeamLeaderId" class="control-label">Team Leader</label>
                 <select asp-for="TeamLeaderId" class="form-control">
-                    <option value="">-- Select Team Leader --</option>
                     @foreach (var teamLeader in ViewBag.TeamLeaders)
                     {
                         <option value="@teamLeader.Value">@teamLeader.Text</option>

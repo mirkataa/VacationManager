@@ -149,11 +149,21 @@ namespace VacationManager.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var project = await _context.Projects.FindAsync(id);
-            if (project != null)
+            if (project == null)
             {
-                _context.Projects.Remove(project);
+                return NotFound();
             }
 
+            // Find teams associated with the project
+            var teams = await _context.Teams.Where(t => t.ProjectId == id).ToListAsync();
+
+            // Update the ProjectId of associated teams to null
+            foreach (var team in teams)
+            {
+                team.ProjectId = null;
+            }
+
+            _context.Projects.Remove(project);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
