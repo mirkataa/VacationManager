@@ -22,7 +22,8 @@ namespace VacationManager.Controllers
         // GET: Roles
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Roles.ToListAsync());
+            var roles = await _context.Roles.Include(r => r.Users).ToListAsync();
+            return View(roles);
         }
 
         // GET: Roles/Details/5

@@ -15,14 +15,21 @@
             <th>
                 @Html.DisplayNameFor(model => model.Name)
             </th>
+            <th style="text-align: center;">
+                Number of Users
+            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+    @foreach (var item in Model) 
+    {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td style="text-align: center;">
+                @item.Users.Count()
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
@@ -30,6 +37,6 @@
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
-}
+    }
     </tbody>
 </table>
