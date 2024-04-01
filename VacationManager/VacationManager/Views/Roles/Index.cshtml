@@ -9,6 +9,11 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+<div id="reminder" style="margin-bottom: 10px;">
+    <strong>Reminder:</strong> The roles: CEO, Developer, Team Lead, and Unassigned cannot be deleted or edited.
+</div>
+
 <table class="table">
     <thead>
         <tr>
@@ -31,12 +36,29 @@
             <td style="text-align: center;">
                 @item.Users.Count()
             </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
+                <td>
+                    @{
+                        bool isEditable = !new[] { "CEO", "Developer", "Team Lead", "Unassigned" }.Contains(item.Name);
+                        string editAction = isEditable ? "Edit" : "#";
+                        string deleteAction = isEditable ? "Delete" : "#";
+                    }
+                    <a asp-action="@editAction" asp-route-id="@item.Id" onclick="return confirmDeleteOrEdit('@item.Name')">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="@deleteAction" asp-route-id="@item.Id" onclick="return confirmDeleteOrEdit('@item.Name')">Delete</a>
+                </td>
         </tr>
     }
     </tbody>
 </table>
+
+@section Scripts {
+    <script>
+        function confirmDeleteOrEdit(roleName) {
+            if (roleName === "CEO" || roleName === "Developer" || roleName === "Team Lead" || roleName === "Unassigned") {
+                alert("This role cannot be deleted or edited.");
+                return false;
+            }
+            return true;
+        }
+    </script>
+}

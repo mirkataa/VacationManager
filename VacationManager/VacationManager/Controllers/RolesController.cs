@@ -141,11 +141,25 @@ namespace VacationManager.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var roleModel = await _context.Roles.FindAsync(id);
-            if (roleModel != null)
+            if (roleModel == null)
             {
-                _context.Roles.Remove(roleModel);
+                return NotFound();
             }
 
+            var unassignedRole = await _context.Roles.FirstOrDefaultAsync(r => r.Id == 4);
+            if (unassignedRole == null)
+            {
+                return BadRequest("Unassigned role not found.");
+            }
+
+            var usersWithRole = await _context.Users.Where(u => u.RoleId == roleModel.Id).ToListAsync();
+
+            foreach (var user in usersWithRole)
+            {
+                user.RoleId = unassignedRole.Id;
+            }
+
+            _context.Roles.Remove(roleModel);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
