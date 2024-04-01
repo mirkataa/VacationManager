@@ -22,6 +22,23 @@ namespace VacationManager
 
             var app = builder.Build();
 
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                dbContext.Database.Migrate(); // Ensure database migrations are applied
+                dbContext.Initialize();
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+
+                // Check if the dummy CEO user exists
+                var dummyCEO = userManager.FindByNameAsync("dummyCEO").Result;
+                if (dummyCEO == null)
+                {
+                    // Create the dummy CEO user
+                    var newUser = new IdentityUser { UserName = "dummyCEO", Email = "dummyCEO@example.com" };
+                    var result = userManager.CreateAsync(newUser, "Test1234_").Result;
+                }
+            }
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {

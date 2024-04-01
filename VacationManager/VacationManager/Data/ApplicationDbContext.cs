@@ -17,7 +17,6 @@ namespace VacationManager.Data
         public DbSet<LeaveRequest> LeaveRequests { get; set; }
 
         private bool rolesInitialized = false;
-        private bool usersInitialized = false;
 
         public void Initialize()
         {
@@ -81,40 +80,6 @@ namespace VacationManager.Data
 
                 // Set the flag to true to indicate that roles have been initialized
                 rolesInitialized = true;
-            }
-
-            if (!usersInitialized)
-            {
-                // Check if a dummy CEO user exists
-                var dummyCEO = Users.FirstOrDefault(u => u.Username == "dummyCEO");
-                if (dummyCEO == null)
-                {
-                    // Create a dummy CEO user
-                    var ceoRole = Roles.FirstOrDefault(r => r.Name == "CEO");
-                    if (ceoRole == null)
-                    {
-                        // CEO role not found, return from the method without further action
-                        return;
-                    }
-
-                    dummyCEO = new UserModel
-                    {
-                        Username = "dummyCEO",
-                        Password = "Test1234_", 
-                        FirstName = "Dummy",
-                        LastName = "CEO",
-                        RoleId = ceoRole.Id, // Assign the CEO role ID
-                        TeamId = notInTeam.Id // No team assigned to the CEO
-                    };
-
-                    // Add the dummy CEO user to the database
-                    Users.Add(dummyCEO);
-                    notInTeam.Developers.Add(dummyCEO);
-                    ceoRole.Users.Add(dummyCEO);
-                    SaveChanges();
-                }
-
-                usersInitialized = true;
             }
         }
 
