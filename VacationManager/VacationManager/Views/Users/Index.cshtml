@@ -9,6 +9,13 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+<select id="pageSizeSelector">
+    <option value="10">10</option>
+    <option value="25">25</option>
+    <option value="50">50</option>
+</select>
+
 <table class="table">
     <thead>
         <tr>
@@ -42,7 +49,7 @@
             <th></th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="tableBody">
 @foreach (var item in Model) {
         <tr>
             <td>
@@ -81,3 +88,67 @@
 }
     </tbody>
 </table>
+
+<button id="prevButton">Previous</button>
+<button id="nextButton">Next</button>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var currentPage = 1;
+            var pageSize = parseInt($('#pageSizeSelector').val());
+            var totalRows = $('#tableBody tr').length; // total rows initially
+
+            // Function to display rows for the current page
+            function displayPageRows() {
+                var startIndex = (currentPage - 1) * pageSize;
+                var endIndex = Math.min(startIndex + pageSize, totalRows);
+                $('#tableBody tr').hide(); // Hide all rows
+                $('#tableBody tr').slice(startIndex, endIndex).show(); // Show rows for the current page
+            }
+
+            // Event handler for changing page size
+            $('#pageSizeSelector').change(function () {
+                pageSize = parseInt($(this).val());
+                currentPage = 1;
+                displayPageRows();
+                updateButtonVisibility();
+            });
+
+            // Event handler for previous button
+            $('#prevButton').click(function () {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayPageRows();
+                    updateButtonVisibility();
+                }
+            });
+
+            // Event handler for next button
+            $('#nextButton').click(function () {
+                currentPage++;
+                displayPageRows();
+                updateButtonVisibility();
+            });
+
+            // Function to update button visibility based on current page and total rows
+            function updateButtonVisibility() {
+                if (currentPage >= Math.ceil(totalRows / pageSize)) {
+                    $('#nextButton').hide(); // Hide "Next" button if on the last page
+                } else {
+                    $('#nextButton').show();
+                }
+
+                if (currentPage == 1) {
+                    $('#prevButton').hide();
+                } else {
+                    $('#prevButton').show();
+                }
+            }
+
+            // Initial display
+            displayPageRows();
+            updateButtonVisibility();
+        });
+    </script>
+}

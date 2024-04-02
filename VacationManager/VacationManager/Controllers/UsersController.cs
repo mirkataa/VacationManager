@@ -20,9 +20,16 @@ namespace VacationManager.Controllers
         }
 
         // GET: Users
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
         {
-            return View(await _context.Users.ToListAsync());
+            var totalUsersCount = await _context.Users.CountAsync();
+            var users = await _context.Users.ToListAsync();
+
+            ViewBag.TotalCount = totalUsersCount;
+            ViewBag.PageSize = pageSize;
+            ViewBag.CurrentPage = page;
+
+            return View(users);
         }
 
         // GET: Users/Details/5
