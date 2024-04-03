@@ -25,6 +25,11 @@ namespace VacationManager.Controllers
             var totalUsersCount = await _context.Users.CountAsync();
             var users = await _context.Users.ToListAsync();
 
+            var teams = await _context.Teams.ToListAsync();
+            var roles = await _context.Roles.ToListAsync();
+
+            ViewBag.Teams = teams;
+            ViewBag.Roles = roles;
             ViewBag.TotalCount = totalUsersCount;
             ViewBag.PageSize = pageSize;
             ViewBag.CurrentPage = page;

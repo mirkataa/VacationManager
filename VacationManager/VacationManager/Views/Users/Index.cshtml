@@ -6,9 +6,9 @@
 
 <h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<form asp-area="Identity" asp-page="/Account/Register" method="get">
+    <button type="submit">Register New User</button>
+</form>
 
 <select id="pageSizeSelector">
     <option value="10">10</option>
@@ -21,9 +21,6 @@
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.Username)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Password)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.FirstName)
@@ -56,19 +53,39 @@
                 @Html.DisplayFor(modelItem => item.Username)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Password)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.FirstName)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.LastName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.RoleId)
+               @{
+                  var roleName = "";
+                  foreach (var role in ViewBag.Roles)
+                  {
+                       if (role.Id == item.RoleId)
+                       {
+                           roleName = role.Name;
+                           break;
+                       }
+                  }
+                  @roleName
+
+                }
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.TeamId)
+                @{
+                   var teamName = "";
+                   foreach (var team in ViewBag.Teams)
+                   {
+                        if (team.Id == item.TeamId)
+                        {
+                            teamName = team.Name;
+                            break;
+                        }
+                   }
+                   @teamName
+                 }
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.IsAway)
