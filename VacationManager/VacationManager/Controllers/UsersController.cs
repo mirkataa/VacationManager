@@ -303,6 +303,7 @@ namespace VacationManager.Controllers
                     {
                         // Remove user from the list of developers
                         team.Developers.Remove(userModel);
+                        _context.Update(team);
                     }
 
                     // Remove user from the role
@@ -310,6 +311,7 @@ namespace VacationManager.Controllers
                     if (role != null)
                     {
                         role.Users.Remove(userModel);
+                        _context.Update(role);
                     }
                 }
                 else if (userModel.RoleId == 3)
@@ -319,6 +321,7 @@ namespace VacationManager.Controllers
                     if (team != null && team.TeamLeaderId == id)
                     {
                         team.TeamLeaderId = null;
+                        _context.Update(team);
                     }
 
                     // Remove user from the role
@@ -326,6 +329,7 @@ namespace VacationManager.Controllers
                     if (role != null)
                     {
                         role.Users.Remove(userModel);
+                        _context.Update(role);
                     }
                 }
 

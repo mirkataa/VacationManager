@@ -158,6 +158,13 @@ namespace VacationManager.Controllers
             foreach (var user in usersWithRole)
             {
                 user.RoleId = unassignedRole.Id;
+                var newRole = await _context.Roles.FindAsync(user.RoleId);
+                if (newRole != null)
+                {
+                    newRole.Users.Add(user);
+                    _context.Update(newRole);
+                    await _context.SaveChangesAsync();
+                }
             }
 
             _context.Roles.Remove(roleModel);
