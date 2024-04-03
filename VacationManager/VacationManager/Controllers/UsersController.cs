@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +14,12 @@ namespace VacationManager.Controllers
     public class UsersController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public UsersController(ApplicationDbContext context)
+        public UsersController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Users
@@ -138,10 +141,35 @@ namespace VacationManager.Controllers
 
             var userModel = await _context.Users
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (userModel == null)
             {
                 return NotFound();
             }
+
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser != null && userModel.Username == currentUser.UserName)
+            {
+                TempData["ErrorMessage"] = "You cannot delete your own account.";
+                return RedirectToAction(nameof(Index));
+            }
+
+
+            // Fetch role name
+            var roleName = await _context.Roles
+                .Where(r => r.Id == userModel.RoleId)
+                .Select(r => r.Name)
+                .FirstOrDefaultAsync();
+
+            // Fetch team name
+            var teamName = await _context.Teams
+                .Where(t => t.Id == userModel.TeamId)
+                .Select(t => t.Name)
+                .FirstOrDefaultAsync();
+
+            // Add role and team names to ViewData
+            ViewData["RoleName"] = roleName;
+            ViewData["TeamName"] = teamName;
 
             return View(userModel);
         }
@@ -154,6 +182,50 @@ namespace VacationManager.Controllers
             var userModel = await _context.Users.FindAsync(id);
             if (userModel != null)
             {
+                // Remove the user from the team and role if necessary
+                if (userModel.RoleId == 4 || userModel.RoleId == 2 || userModel.RoleId == 1)
+                {
+                    var team = await _context.Teams.FirstOrDefaultAsync(t => t.Id == userModel.TeamId);
+                    if (team != null)
+                    {
+                        // Remove user from the list of developers
+                        team.Developers.Remove(userModel);
+                    }
+
+                    // Remove user from the role
+                    var role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == userModel.RoleId);
+                    if (role != null)
+                    {
+                        role.Users.Remove(userModel);
+                    }
+                }
+                else if (userModel.RoleId == 3)
+                {
+                    // Set TeamLeaderId to null if user is a team leader
+                    var team = await _context.Teams.FirstOrDefaultAsync(t => t.Id == userModel.TeamId);
+                    if (team != null && team.TeamLeaderId == id)
+                    {
+                        team.TeamLeaderId = null;
+                    }
+
+                    // Remove user from the role
+                    var role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == userModel.RoleId);
+                    if (role != null)
+                    {
+                        role.Users.Remove(userModel);
+                    }
+                }
+
+                var user = await _userManager.FindByNameAsync(userModel.Username);
+                if (user != null)
+                {
+                    var result = await _userManager.DeleteAsync(user);
+                    if (!result.Succeeded)
+                    {
+                        return NotFound();
+                    }
+                }
+
                 _context.Users.Remove(userModel);
             }
 

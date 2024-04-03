@@ -4,6 +4,13 @@
     ViewData["Title"] = "Index";
 }
 
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
 <h1>Index</h1>
 
 <form asp-area="Identity" asp-page="/Account/Register" method="get">
