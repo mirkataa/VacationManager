@@ -71,7 +71,104 @@ namespace VacationManager.Controllers
             ViewData["RoleName"] = roleName;
             ViewData["TeamName"] = teamName;
 
+            // Populate dropdown options for selecting teams
+            IEnumerable<SelectListItem>? teamOptions;
+            if (userModel.RoleId == 2) // Developer
+            {
+                teamOptions = await _context.Teams
+                    .Where(t => t.Id != 1)
+                    .Select(t => new SelectListItem { Value = t.Id.ToString(), Text = t.Name })
+                    .ToListAsync();
+            }
+            else if (userModel.RoleId == 3) // TeamLead
+            {
+                teamOptions = await _context.Teams
+                    .Where(t => t.TeamLeaderId == null && t.Id != 1)
+                    .Select(t => new SelectListItem { Value = t.Id.ToString(), Text = t.Name })
+                    .ToListAsync();
+            }
+            else
+            {
+                teamOptions = await _context.Teams // Other Role
+                    .Where(t => t.Id == 1)
+                    .Select(t => new SelectListItem { Value = t.Id.ToString(), Text = t.Name })
+                    .ToListAsync();
+            }
+
+            ViewData["TeamOptions"] = teamOptions;
+
             return View(userModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateTeam(UserModel userModel)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == userModel.Id);
+                  
+                    if (existingUser == null)
+                    {
+                        return NotFound();
+                    }
+
+                    if (existingUser.RoleId == 2)
+                    {
+                        var exTeam = await _context.Teams.FirstOrDefaultAsync(t => t.Id == existingUser.TeamId);
+                        var newTeam = await _context.Teams.FirstOrDefaultAsync(t => t.Id == userModel.TeamId);
+                        if (exTeam != null && newTeam != null)
+                        {
+                            exTeam.Developers.Remove(existingUser);
+                            _context.Update(exTeam);
+                            existingUser.TeamId = userModel.TeamId;
+                            newTeam.Developers.Add(existingUser);
+                            _context.Update(newTeam);
+                        }
+                    }
+                    else if (existingUser.RoleId == 3)
+                    {
+                        var newTeam = await _context.Teams.FirstOrDefaultAsync(t => t.Id == userModel.TeamId);
+                        var exTeam = await _context.Teams.FirstOrDefaultAsync(t => t.Id == existingUser.TeamId);
+                        if (newTeam != null && exTeam != null)
+                        {
+                            newTeam.TeamLeaderId = existingUser.Id;
+                            _context.Update(newTeam);
+                            existingUser.TeamId = userModel.TeamId;
+                            exTeam.TeamLeaderId = null;
+                            _context.Update(exTeam);
+                        }
+                    }
+                    else
+                    {
+                        var newTeam = await _context.Teams.FirstOrDefaultAsync(t => t.Id == userModel.TeamId);
+                        var exTeam = await _context.Teams.FirstOrDefaultAsync(t => t.Id == existingUser.TeamId);
+                        if (newTeam != null && exTeam != null)
+                        {
+                            newTeam.Developers.Add(existingUser);
+                            _context.Update(newTeam);
+                            existingUser.TeamId = userModel.TeamId;
+                            exTeam.Developers.Remove(existingUser);
+                            _context.Update(exTeam);
+                        }
+
+                    }
+
+                    _context.Update(existingUser);
+                    await _context.SaveChangesAsync();
+
+                    return RedirectToAction(nameof(Details), new { id = existingUser.Id });
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Failed to update team.");
+                    return View(nameof(Details), userModel);
+                }
+            }
+
+            return RedirectToAction(nameof(Details), new { id = userModel.Id });
         }
 
         // GET: Users/Create
