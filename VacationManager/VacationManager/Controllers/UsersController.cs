@@ -55,6 +55,22 @@ namespace VacationManager.Controllers
                 return NotFound();
             }
 
+            // Fetch role name
+            var roleName = await _context.Roles
+                .Where(r => r.Id == userModel.RoleId)
+                .Select(r => r.Name)
+                .FirstOrDefaultAsync();
+
+            // Fetch team name
+            var teamName = await _context.Teams
+                .Where(t => t.Id == userModel.TeamId)
+                .Select(t => t.Name)
+                .FirstOrDefaultAsync();
+
+            // Add role and team names to ViewData
+            ViewData["RoleName"] = roleName;
+            ViewData["TeamName"] = teamName;
+
             return View(userModel);
         }
 

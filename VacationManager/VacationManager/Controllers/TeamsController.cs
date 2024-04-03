@@ -79,7 +79,6 @@ namespace VacationManager.Controllers
         {
             // Fetch the list of projects and team leaders from the database
             var projects = _context.Projects.ToList();
-
             // Fetch the list of users with Unassigned role
             var teamLeaders = _context.Users.Where(u => u.RoleId == 4).ToList();
 
@@ -134,6 +133,13 @@ namespace VacationManager.Controllers
                     var teamLeader = await _context.Users.FindAsync(teamModel.TeamLeaderId);
                     if (teamLeader != null)
                     {
+                        var exRole = await _context.Roles.FindAsync(teamLeader.RoleId);
+                        if (exRole != null)
+                        {
+                            exRole.Users.Remove(teamLeader);
+                            _context.Update(exRole);
+                            await _context.SaveChangesAsync();
+                        }
                         // Remove the user from the "Not in a team" team
                         var notInTeam = await _context.Teams.FindAsync(1);
                         if (notInTeam != null)
@@ -143,7 +149,14 @@ namespace VacationManager.Controllers
                             await _context.SaveChangesAsync();
                         }
 
-                        teamLeader.RoleId = 3; // RoleId 3 (TeamLead)
+                        teamLeader.RoleId = 3; // Assuming RoleId 3 represents TeamLead
+                        var newRole = await _context.Roles.FindAsync(teamLeader.RoleId);
+                        if (newRole != null)
+                        {
+                            newRole.Users.Add(teamLeader);
+                            _context.Update(newRole);
+                            await _context.SaveChangesAsync();
+                        }
                         teamLeader.TeamId = teamModel.Id;
                         _context.Update(teamLeader);
                         await _context.SaveChangesAsync();
@@ -193,6 +206,7 @@ namespace VacationManager.Controllers
 
             // Set the SelectList for the ViewBag
             ViewBag.Projects = new SelectList(projectItems, "Value", "Text", teamModel.ProjectId);
+
 
             // Populate ViewBag with users with Role "Unassigned"
             var teamLeaders = await _context.Users.Where(u => u.RoleId == 4).ToListAsync();
@@ -283,11 +297,11 @@ namespace VacationManager.Controllers
                                 _context.Update(newProject);
                             }
                         }
-
                         // Update the team's project
                         currentTeam.ProjectId = teamModel.ProjectId;
                     }
 
+                    // Save changes to the database
                     await _context.SaveChangesAsync();
 
                     // Check if "No Team Leader" option is selected
@@ -297,6 +311,13 @@ namespace VacationManager.Controllers
                         var currentTeamLeader = await _context.Users.FindAsync(currentTeam.TeamLeaderId);
                         if (currentTeamLeader != null && currentTeamLeader.RoleId == 3)
                         {
+                            var exRole = await _context.Roles.FindAsync(currentTeamLeader.RoleId);
+                            if (exRole != null)
+                            {
+                                exRole.Users.Remove(currentTeamLeader);
+                                _context.Update(exRole);
+                                await _context.SaveChangesAsync();
+                            }
                             var notInTeam = await _context.Teams.FindAsync(1);
                             if (notInTeam != null)
                             {
@@ -306,9 +327,16 @@ namespace VacationManager.Controllers
                             }
                             currentTeamLeader.TeamId = 1;
                             currentTeamLeader.RoleId = 4;
+                            var newRole = await _context.Roles.FindAsync(currentTeamLeader.RoleId);
+                            if (newRole != null)
+                            {
+                                newRole.Users.Add(currentTeamLeader);
+                                _context.Update(newRole);
+                                await _context.SaveChangesAsync();
+                            }
                             _context.Update(currentTeamLeader);
                         }
-
+                        // Set TeamLeaderId to null
                         currentTeam.TeamLeaderId = null;
                     }
                     else
@@ -332,6 +360,13 @@ namespace VacationManager.Controllers
                             // If the new team leader's role is "Unassigned" (RoleId = 4), change it to Team Leader (RoleId = 3)
                             if (newTeamLeader.RoleId == 4)
                             {
+                                var exRole = await _context.Roles.FindAsync(newTeamLeader.RoleId);
+                                if (exRole != null)
+                                {
+                                    exRole.Users.Remove(newTeamLeader);
+                                    _context.Update(exRole);
+                                    await _context.SaveChangesAsync();
+                                }
                                 var notInTeam = await _context.Teams.FindAsync(1);
                                 if (notInTeam != null)
                                 {
@@ -341,6 +376,13 @@ namespace VacationManager.Controllers
                                 }
                                 newTeamLeader.TeamId = teamModel.Id;
                                 newTeamLeader.RoleId = 3;
+                                var newRole = await _context.Roles.FindAsync(newTeamLeader.RoleId);
+                                if (newRole != null)
+                                {
+                                    newRole.Users.Add(newTeamLeader);
+                                    _context.Update(newRole);
+                                    await _context.SaveChangesAsync();
+                                }
                                 _context.Update(newTeamLeader);
                             }
 
@@ -348,6 +390,13 @@ namespace VacationManager.Controllers
                             var currentTeamLeader = await _context.Users.FindAsync(currentTeam.TeamLeaderId);
                             if (currentTeamLeader != null && currentTeamLeader.RoleId == 3 && currentTeamLeader.Id != newTeamLeader.Id)
                             {
+                                var exRole = await _context.Roles.FindAsync(currentTeamLeader.RoleId);
+                                if (exRole != null)
+                                {
+                                    exRole.Users.Remove(currentTeamLeader);
+                                    _context.Update(exRole);
+                                    await _context.SaveChangesAsync();
+                                }
                                 var notInTeam = await _context.Teams.FindAsync(1);
                                 if (notInTeam != null)
                                 {
@@ -357,6 +406,13 @@ namespace VacationManager.Controllers
                                 }
                                 currentTeamLeader.TeamId = 1;
                                 currentTeamLeader.RoleId = 4;
+                                var newRole = await _context.Roles.FindAsync(currentTeamLeader.RoleId);
+                                if (newRole != null)
+                                {
+                                    newRole.Users.Add(currentTeamLeader);
+                                    _context.Update(newRole);
+                                    await _context.SaveChangesAsync();
+                                }
                                 _context.Update(currentTeamLeader);
                             }
                         }
@@ -444,8 +500,22 @@ namespace VacationManager.Controllers
                 var teamLeader = await _context.Users.FindAsync(teamModel.TeamLeaderId);
                 if (teamLeader != null)
                 {
+                    var exRole = await _context.Roles.FindAsync(teamLeader.RoleId);
+                    if (exRole != null)
+                    {
+                        exRole.Users.Remove(teamLeader);
+                        _context.Update(exRole);
+                        await _context.SaveChangesAsync();
+                    }
                     teamLeader.RoleId = 4; // Unassigned
                     teamLeader.TeamId = 1; // Move team leader to "No Team"
+                    var newRole = await _context.Roles.FindAsync(teamLeader.RoleId);
+                    if (newRole != null)
+                    {
+                        newRole.Users.Add(teamLeader);
+                        _context.Update(newRole);
+                        await _context.SaveChangesAsync();
+                    }
                     var notInTeam = await _context.Teams.FindAsync(1);
                     if (notInTeam != null)
                     {
@@ -460,9 +530,24 @@ namespace VacationManager.Controllers
             // Change the RoleId of all developers in the team to 4 (Unassigned)
             foreach (var developer in teamModel.Developers)
             {
+                var exRole = await _context.Roles.FindAsync(developer.RoleId);
+                if (exRole != null)
+                {
+                    exRole.Users.Remove(developer);
+                    _context.Update(exRole);
+                    await _context.SaveChangesAsync();
+                }
                 teamModel.Developers.Remove(developer);
                 developer.RoleId = 4; // Unassigned
                 developer.TeamId = 1; // Move developer to "No Team"
+                var newRole = await _context.Roles.FindAsync(developer.RoleId);
+                if (newRole != null)
+                {
+                    newRole.Users.Add(developer);
+                    _context.Update(newRole);
+                    await _context.SaveChangesAsync();
+                }
+
                 var notInTeam = await _context.Teams.FindAsync(1);
                 if (notInTeam != null)
                 {
@@ -502,7 +587,21 @@ namespace VacationManager.Controllers
             {
                 team.Developers.Add(developer);
                 developer.TeamId = teamId;
+                var exRole = await _context.Roles.FindAsync(developer.RoleId);
+                if (exRole != null)
+                {
+                    exRole.Users.Remove(developer);
+                    _context.Update(exRole);
+                    await _context.SaveChangesAsync();
+                }
                 developer.RoleId = 2; //From Unassigned to Developer
+                var newRole = await _context.Roles.FindAsync(developer.RoleId);
+                if (newRole != null)
+                {
+                    newRole.Users.Add(developer);
+                    _context.Update(newRole);
+                    await _context.SaveChangesAsync();
+                }
                 var notInTeam = await _context.Teams.FindAsync(1);
                 if (notInTeam != null)
                 {
@@ -527,7 +626,21 @@ namespace VacationManager.Controllers
             {
                 team.Developers.Remove(developer);
                 developer.TeamId = 1; //Add to "Not in a team" team
+                var exRole = await _context.Roles.FindAsync(developer.RoleId);
+                if (exRole != null)
+                {
+                    exRole.Users.Remove(developer);
+                    _context.Update(exRole);
+                    await _context.SaveChangesAsync();
+                }
                 developer.RoleId = 4; //Role to Unassigned
+                var newRole = await _context.Roles.FindAsync(developer.RoleId);
+                if (newRole != null)
+                {
+                    newRole.Users.Add(developer);
+                    _context.Update(newRole);
+                    await _context.SaveChangesAsync();
+                }
                 var notInTeam = await _context.Teams.FindAsync(1);
                 if (notInTeam != null)
                 {
@@ -547,3 +660,4 @@ namespace VacationManager.Controllers
         }
     }
 }
+

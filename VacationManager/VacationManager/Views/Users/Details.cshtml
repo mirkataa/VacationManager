@@ -34,17 +34,17 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.LastName)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RoleId)
+        <dt class="col-sm-2">
+            Role
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RoleId)
+        <dd class="col-sm-10">
+            @ViewData["RoleName"]
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TeamId)
+        <dt class="col-sm-2">
+            Team
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TeamId)
+        <dd class="col-sm-10">
+            @ViewData["TeamName"]
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.IsAway)
