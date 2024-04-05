@@ -1,0 +1,441 @@
+﻿@model VacationManager.Models.LeaveRequest
+
+@{
+    ViewData["Title"] = "Create";
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<div id="button-container">
+    <button id="normal-leave-button">Normal Leave</button>
+    <button id="medical-leave-button">Medical Leave</button>
+</div>
+
+<div id="form-container" style="display: none;">
+    @* <form id="leave-request-form" asp-action="Create" style="display: none;"> *@
+    <form id="normal-leave-form" asp-action="Create" style="display: none;">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <!-- Common fields for both normal and medical leave -->
+        <div class="form-group" style="display: none;">
+            <label asp-for="RequestCreationDate" class="control-label"></label>
+            <input asp-for="RequestCreationDate" class="form-control" />
+            <span asp-validation-for="RequestCreationDate" class="text-danger"></span>
+        </div>
+
+        <!-- Fields for normal leave -->
+        @* <div id="normal-leave-fields" style="display: none;"> *@
+        <h1>Formal Request</h1>
+
+        <div class="row">
+            <div class="col-md-6">
+                <p>From <span id="applicantName">@ViewBag.ApplicantName</span></p>
+                <p>Mr. or Mrs. <select id="ApproverId" name="ApproverId" asp-for="ApproverId"></select></p>
+                <p>I am writing to request your approval for</p>
+                <p>
+                    (<label class="form-check-label" for="isPaid">
+                        <input type="checkbox" id="isPaid" name="isPaid" asp-for="IsPaid">
+                        Paid
+                    </label>) Vacation leave
+                </p>
+                <p>from <input type="date" id="startDate" name="startDate" asp-for="StartDate"
+                   min="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")"> through <input type="date" id="endDate" name="endDate" asp-for="EndDate"
+                   min="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")"></p>
+                <div class="form-group">
+                    <label asp-for="IsHalfDay">This is a request for a half-day leave.</label>
+                    <input type="checkbox" asp-for="IsHalfDay" name="isHalfDay">
+                </div>
+                <div id="additionalFields" style="display: none;">
+                    <p>I want to use</p>
+                    <div class="form-group">
+                        <label for="currentYearDays">Days from <span id="currentYearLabel"></span>:</label>
+                        <input type="number" id="currentYearDays" name="currentYearDays" class="form-control"
+                               max="@ViewBag.LeftDaysThisYear" min="0" step="1" style="width: 70px;" value="0">
+                    </div>
+                    and
+                    <div class="form-group">
+                        <label for="previousYearDays">Days from <span id="previousYearLabel"></span>:</label>
+                        <input type="number" id="previousYearDays" name="previousYearDays" class="form-control"
+                               max="@ViewBag.LeftDaysPreviousYear" min="0" step="1" style="width: 70px;" value="0">
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-6">
+                <div id="vacationDaysStatus" style="display: none;">
+                    <h3>Vacation Days Status</h3>
+                    <p><b>For @DateTime.Now.Year:</b></p>
+                    <p>Vacation Days: <span id="currentYearVacationDays">@ViewBag.CurrentYearVacationDays</span></p>
+                    <p>Used Days: <span id="currentYearUsedDays">@ViewBag.CurrentYearUsedDays</span></p>
+                    <p>Days left for use: <span id="thisYearLeftDays">@ViewBag.LeftDaysThisYear</span></p>
+                    @{
+                        int previousYear = DateTime.Now.Year - 1;
+                    }
+                    <p><b>For @previousYear :</b></p>
+                    <p>Vacation Days: <span id="previousYearVacationDays">@ViewBag.PreviousYearVacationDays</span></p>
+                    <p>Used Days: <span id="previousYearUsedDays">@ViewBag.PreviousYearUsedDays</span></p>
+                    <p>Days left for use: <span id="previousYearLeftDays">@ViewBag.LeftDaysPreviousYear</span></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group form-check" style="display: none;">
+            <label class="form-check-label">
+                <input class="form-check-input" asp-for="IsSickLeave" /> @Html.DisplayNameFor(model => model.IsSickLeave)
+            </label>
+        </div>
+        <div class="form-group" style="display: none;">
+            <label asp-for="MedicalCertificate" class="control-label"></label>
+            <input asp-for="MedicalCertificate" class="form-control" />
+            <span asp-validation-for="MedicalCertificate" class="text-danger"></span>
+        </div>
+        <div class="form-group form-check" style="display: none;">
+            <label class="form-check-label">
+                <input class="form-check-input" asp-for="IsApproved" /> @Html.DisplayNameFor(model => model.IsApproved)
+            </label>
+        </div>
+
+        <div class="form-group">
+            <input type="submit" value="Create" class="btn btn-primary" />
+        </div>
+
+        @* </div> *@
+    </form>
+    <form id="medical-leave-form" asp-action="Create" style="display: none;">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <h1>Sick Leave</h1>
+        <!-- Common fields for both normal and medical leave -->
+        <div class="form-group" style="display: none;">
+            <label asp-for="RequestCreationDate" class="control-label"></label>
+            <input asp-for="RequestCreationDate" class="form-control" />
+            <span asp-validation-for="RequestCreationDate" class="text-danger"></span>
+        </div>
+        <!-- Fields for medical leave (initially hidden) -->
+        <div id="medical-leave-fields">
+            <div class="form-group" style="display: none;">
+                <label asp-for="ApplicantId" class="control-label"></label>
+                <input asp-for="ApplicantId" class="form-control" />
+                <span asp-validation-for="ApplicantId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StartDate" class="control-label">I will be absent from work for medical reasons from</label>
+                <input asp-for="StartDate" class="form-control" />
+                <span asp-validation-for="StartDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EndDate" class="control-label">through</label>
+                <input asp-for="EndDate" class="form-control" />
+                <span asp-validation-for="EndDate" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check" style="display: none;">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsSickLeave" /> @Html.DisplayNameFor(model => model.IsSickLeave)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="MedicalCertificate" class="control-label"></label>
+                <input asp-for="MedicalCertificate" type="file" class="form-control" />
+                <span asp-validation-for="MedicalCertificate" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check" style="display: none;">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsPaid" /> @Html.DisplayNameFor(model => model.IsPaid)
+                </label>
+            </div>
+            <div class="form-group form-check" style="display: none;">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsHalfDay" /> @Html.DisplayNameFor(model => model.IsHalfDay)
+                </label>
+            </div>
+            <div class="form-group form-check" style="display: none;">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsApproved" /> @Html.DisplayNameFor(model => model.IsApproved)
+                </label>
+            </div>
+            <div class="form-group" style="display: none;">
+                <label asp-for="ApproverId" class="control-label"></label>
+                <input asp-for="ApproverId" class="form-control" />
+                <span asp-validation-for="ApproverId" class="text-danger"></span>
+            </div>
+        </div>
+
+        <!-- Hidden fields -->
+        <div class="form-group" style="display: none;">
+            <!-- Add other fields here -->
+        </div>
+
+        <div class="form-group">
+            <input type="submit" value="Create" class="btn btn-primary" />
+        </div>
+    </form>
+    <button id="back-button">Back</button>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    <script>
+        // Function to submit the form
+        function submitForm(formId) {
+            var form = document.getElementById(formId);
+            form.submit();
+        }
+
+        document.getElementById('normal-leave-button').addEventListener('click', function () {
+            document.getElementById('button-container').style.display = 'none';
+            document.getElementById('form-container').style.display = 'block';
+            document.getElementById('normal-leave-form').style.display = 'block';
+            document.getElementById('medical-leave-form').style.display = 'none';
+            //document.getElementById('normal-leave-fields').style.display = 'block';
+            //document.getElementById('medical-leave-fields').style.display = 'none';
+        });
+
+        document.getElementById('medical-leave-button').addEventListener('click', function () {
+            document.getElementById('button-container').style.display = 'none';
+            document.getElementById('form-container').style.display = 'block';
+            document.getElementById('normal-leave-form').style.display = 'none';
+            document.getElementById('medical-leave-form').style.display = 'block';
+            //document.getElementById('normal-leave-fields').style.display = 'none';
+            //document.getElementById('medical-leave-fields').style.display = 'block';
+        });
+
+        document.getElementById('back-button').addEventListener('click', function () {
+            document.getElementById('form-container').style.display = 'none';
+            document.getElementById('button-container').style.display = 'block';
+        });
+
+        // Event listener for form submission
+        document.getElementById('normal-leave-form').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent default form submission
+            submitForm('normal-leave-form'); // Submit only the normal leave form
+        });
+
+        document.getElementById('medical-leave-form').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent default form submission
+            submitForm('medical-leave-form'); // Submit only the medical leave form
+        });
+
+        // Populate the ApproverId dropdown list
+        var approverSelect = document.getElementById('ApproverId');
+        var approvers = @Html.Raw(Json.Serialize(ViewBag.Approvers));
+        approvers.forEach(function (approver) {
+            var option = document.createElement('option');
+            option.value = approver.value;
+            option.text = approver.text;
+            approverSelect.appendChild(option);
+        });
+
+        // Event listener for ApproverId dropdown change
+        document.getElementById('ApproverId').addEventListener('change', function () {
+            var approverId = this.value;
+            var approverName = document.querySelector('select[id="ApproverId"] option:checked').text;
+            document.getElementById('approverIdSpan').textContent = approverName;
+        });
+
+        document.getElementById('isPaid').addEventListener('change', function () {
+            var additionalFields = document.getElementById('additionalFields');
+            var vacationDaysStatus = document.getElementById('vacationDaysStatus');
+            if (this.checked) {
+                additionalFields.style.display = 'block';
+                vacationDaysStatus.style.display = 'block';
+            } else {
+                additionalFields.style.display = 'none';
+                vacationDaysStatus.style.display = 'none';
+            }
+        });
+
+        // Current and Previous Year
+        document.addEventListener("DOMContentLoaded", function () {
+            var currentYear = new Date().getFullYear();
+            var previousYear = currentYear - 1;
+            document.getElementById("currentYearLabel").innerText = currentYear;
+            document.getElementById("previousYearLabel").innerText = previousYear;
+        });
+
+        // Function to calculate the number of weekdays between two dates
+        function calculateWeekdays(startDate, endDate) {
+            var count = 0;
+            var currentDate = new Date(startDate);
+            var end = new Date(endDate);
+
+            while (currentDate <= end) {
+                var dayOfWeek = currentDate.getDay();
+                if (dayOfWeek !== 0 && dayOfWeek !== 6) { // Exclude weekends (0 = Sunday, 6 = Saturday)
+                    count++;
+                }
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            return count;
+        }
+
+        // Function to handle changes in the start date and end date fields
+        function handleDateChange() {
+            var startDate = document.getElementById('startDate').value;
+            var endDate = document.getElementById('endDate').value;
+            var isPaidCheckbox = document.getElementById('isPaid');
+            var halfDayCheckbox = document.querySelector('input[name="isHalfDay"]');
+            var startDateVal = new Date(startDate);
+            var endDateVal = new Date(endDate);
+
+
+            if (startDate && endDate) {
+                var weekdaysBetweenDates = calculateWeekdays(startDate, endDate);
+
+                // Update the previous year days field with the calculated value
+                var previousYearDaysField = document.getElementById('previousYearDays');
+                var currentYearDaysField = document.getElementById('currentYearDays');
+                if (weekdaysBetweenDates === 0 || !isPaidCheckbox.checked) {
+                    previousYearDaysField.value = 0;
+                    currentYearDaysField.value = 0;
+                }
+                else if (isPaidCheckbox.checked && startDateVal.getTime() === endDateVal.getTime() && halfDayCheckbox.checked) {
+                    var maxDays = parseInt(previousYearDaysField.getAttribute('max'));
+                    previousYearDaysField.value = Math.min(0.5, maxDays);
+                    currentYearDaysField.value = Math.max(0.5 - previousYearDaysField.value, 0);
+                } else {
+                    var maxDays = parseInt(previousYearDaysField.getAttribute('max'));
+                    previousYearDaysField.value = Math.min(weekdaysBetweenDates, maxDays);
+                    currentYearDaysField.value = Math.max(weekdaysBetweenDates - previousYearDaysField.value, 0);
+                }
+            }
+        }
+
+        // Add event listener to the isHalfDay checkbox
+        document.querySelector('input[name="isHalfDay"]').addEventListener('change', function () {
+
+            handleDateChange();
+
+        });
+
+        // Add event listeners to start date and end date fields
+        document.getElementById('startDate').addEventListener('change', handleDateChange);
+        document.getElementById('endDate').addEventListener('change', handleDateChange);
+
+        // Function to reset start date and end date fields to the day after today
+        function resetDatesToNextDay() {
+            var today = new Date();
+            var tomorrow = new Date(today);
+            tomorrow.setDate(today.getDate() + 1);
+
+            var startDateField = document.getElementById('startDate');
+            startDateField.value = tomorrow.toISOString().slice(0, 10);
+
+            var endDateField = document.getElementById('endDate');
+            endDateField.value = tomorrow.toISOString().slice(0, 10);
+
+            // Trigger date change event to update related fields
+            handleDateChange();
+        }
+
+        // Add event listener to the back button
+        document.getElementById('back-button').addEventListener('click', resetDatesToNextDay);
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Get the elements
+            var previousYearDaysField = document.getElementById('previousYearDays');
+            var currentYearDaysField = document.getElementById('currentYearDays');
+            var submitButton = document.querySelector('input[type="submit"]');
+            var errorMessage = document.createElement('div');
+            errorMessage.classList.add('text-danger');
+            errorMessage.id = 'error-message';
+            var form = document.getElementById('normal-leave-form');
+
+            // Add event listener for field changes
+            previousYearDaysField.addEventListener('change', handleFieldChange);
+            currentYearDaysField.addEventListener('change', handleFieldChange);
+
+            function handleFieldChange() {
+                // Get the values
+                var previousYearDays = parseInt(previousYearDaysField.value);
+                var currentYearDays = parseInt(currentYearDaysField.value);
+                var workdays = calculateWeekdays(new Date(document.getElementById('startDate').value), new Date(document.getElementById('endDate').value));
+
+                // Check if the sum of previousYearDays and currentYearDays matches the workdays
+                if ((previousYearDays + currentYearDays) !== workdays) {
+                    submitButton.style.display = 'none';
+                    alert('The total number of days selected does not match the number of workdays between the start and end date.');
+                } else {
+                    // Remove error message and display submit button
+                    //if (document.getElementById('error-message')) {
+                    //   form.removeChild(errorMessage);
+                    // }
+                    submitButton.style.display = 'block';
+                }
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Get the elements
+            var startDateField = document.getElementById('startDate');
+            var endDateField = document.getElementById('endDate');
+            var halfDayCheckbox = document.querySelector('input[name="isHalfDay"]');
+            var isPaidCheckbox = document.getElementById('isPaid');
+            var previousYearDaysField = document.getElementById('previousYearDays');
+            var currentYearDaysField = document.getElementById('currentYearDays');
+
+            // Add event listeners for field changes
+            startDateField.addEventListener('change', handleDtChange);
+            endDateField.addEventListener('change', handleDtChange);
+            isPaidCheckbox.addEventListener('change', handleIsPaidChange);
+
+            // Function to handle date changes
+            function handleDtChange() {
+                adjustEndDate();
+                toggleHalfDayCheckboxVisibility();
+            }
+
+            // Function to adjust EndDate if it's before StartDate
+            function adjustEndDate() {
+                var startDate = new Date(startDateField.value);
+                var endDate = new Date(endDateField.value);
+
+                // Compare EndDate with StartDate
+                if (endDate < startDate) {
+                    // Set EndDate to be the same as StartDate
+                    endDateField.value = startDateField.value;
+                    handleDateChange();
+                }
+            }
+
+            // Function to toggle visibility of half-day checkbox
+            function toggleHalfDayCheckboxVisibility() {
+                var startDate = new Date(startDateField.value);
+                var endDate = new Date(endDateField.value);
+
+                // Check if StartDate and EndDate are equal
+                if (startDate.getTime() === endDate.getTime()) {
+                    // Show half-day checkbox
+                    halfDayCheckbox.parentNode.style.display = 'block';
+                } else {
+                    // Hide half-day checkbox
+                    halfDayCheckbox.parentNode.style.display = 'none';
+                    // Uncheck the checkbox if it was checked
+                    halfDayCheckbox.checked = false;
+                }
+            }
+
+            // Function to handle changes in isPaid checkbox
+            function handleIsPaidChange() {
+                if (!isPaidCheckbox.checked) {
+                    previousYearDaysField.value = 0;
+                    currentYearDaysField.value = 0;
+                }
+                else {
+                    handleDateChange();
+                }
+            }
+
+            // Initial adjustments based on current values
+            handleDtChange();
+            handleIsPaidChange();
+        });
+
+    </script>
+}

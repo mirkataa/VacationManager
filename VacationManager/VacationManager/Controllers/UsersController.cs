@@ -343,6 +343,13 @@ namespace VacationManager.Controllers
                     }
                 }
 
+                var vacationDays = _context.VacationDaysModel.Where(d => d.UserId == userModel.Id).ToList();
+                foreach(var entry in vacationDays)
+                {
+                    _context.Remove(entry);
+                    _context.SaveChanges();
+                }
+
                 _context.Users.Remove(userModel);
             }
 
