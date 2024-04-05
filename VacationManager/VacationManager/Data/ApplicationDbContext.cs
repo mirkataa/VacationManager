@@ -94,5 +94,6 @@ namespace VacationManager.Data
 
             return base.SaveChanges();
         }
+        public DbSet<VacationManager.Models.VacationDaysModel> VacationDaysModel { get; set; } = default!;
     }
 }
