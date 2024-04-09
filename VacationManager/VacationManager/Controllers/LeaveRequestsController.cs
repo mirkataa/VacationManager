@@ -104,7 +104,7 @@ namespace VacationManager.Controllers
                 {
                     ViewBag.CurrentYearVacationDays = vacationDaysThisYear.VacationDays;
                     ViewBag.CurrentYearUsedDays = vacationDaysThisYear.UsedDays;
-                    var daysLeftThisYear = vacationDaysThisYear.VacationDays - vacationDaysThisYear.UsedDays;
+                    var daysLeftThisYear = vacationDaysThisYear.VacationDays - vacationDaysThisYear.UsedDays - vacationDaysThisYear.PendingDays;
                     ViewBag.LeftDaysThisYear = daysLeftThisYear;
                 }
                 else
@@ -123,7 +123,7 @@ namespace VacationManager.Controllers
                 {
                     ViewBag.PreviousYearVacationDays = vacationDaysLastYear.VacationDays;
                     ViewBag.PreviousYearUsedDays = vacationDaysLastYear.UsedDays;
-                    var daysLeftPreviousYear = vacationDaysLastYear.VacationDays - vacationDaysLastYear.UsedDays;
+                    var daysLeftPreviousYear = vacationDaysLastYear.VacationDays - vacationDaysLastYear.UsedDays - vacationDaysLastYear.PendingDays;
                     ViewBag.LeftDaysPreviousYear = daysLeftPreviousYear;
                 }
                 else

@@ -72,14 +72,14 @@
                     <p><b>For @DateTime.Now.Year:</b></p>
                     <p>Vacation Days: <span id="currentYearVacationDays">@ViewBag.CurrentYearVacationDays</span></p>
                     <p>Used Days: <span id="currentYearUsedDays">@ViewBag.CurrentYearUsedDays</span></p>
-                    <p>Days left for use: <span id="thisYearLeftDays">@ViewBag.LeftDaysThisYear</span></p>
+                    <p>Days left for use (pending days are excluded): <span id="thisYearLeftDays">@ViewBag.LeftDaysThisYear</span></p>
                     @{
                         int previousYear = DateTime.Now.Year - 1;
                     }
                     <p><b>For @previousYear :</b></p>
                     <p>Vacation Days: <span id="previousYearVacationDays">@ViewBag.PreviousYearVacationDays</span></p>
                     <p>Used Days: <span id="previousYearUsedDays">@ViewBag.PreviousYearUsedDays</span></p>
-                    <p>Days left for use: <span id="previousYearLeftDays">@ViewBag.LeftDaysPreviousYear</span></p>
+                    <p>Days left for use (pending days are excluded): <span id="previousYearLeftDays">@ViewBag.LeftDaysPreviousYear</span></p>
                 </div>
             </div>
         </div>
