@@ -74,19 +74,67 @@ namespace VacationManager.Controllers
             {
                 var teamId = user.TeamId;
                 var roleId = user.RoleId;
+                var teams = _context.Teams.ToList();
 
-                // Query the Users table to fetch users based on the criteria
-                var approvers = _context.Users
-                    .Where(u => (u.RoleId == 1 || (u.RoleId == 3 && u.TeamId == teamId)))
-                    .OrderByDescending(u => u.RoleId)
-                    .Select(u => new SelectListItem
+                // Approvers based on RoleId
+                if (teamId != null && roleId != 3 && roleId != 1 && roleId != 4)
+                {
+                    var userTeam = teams.FirstOrDefault(t => t.Id == teamId);
+                    if (userTeam.TeamLeaderId == null)
                     {
-                        Value = u.Id.ToString(),
-                        Text = $"{u.FirstName} {u.LastName}"
-                    })
-                    .ToList();
+                        var approvers = _context.Users
+                        .Where(u => u.RoleId == 1)
+                        .OrderByDescending(u => u.RoleId)
+                        .Select(u => new SelectListItem
+                        {
+                            Value = u.Id.ToString(),
+                            Text = $"{u.FirstName} {u.LastName}"
+                        })
+                        .ToList();
+                        ViewBag.Approvers = approvers;
+                    }
+                    else
+                    {
+                        var approvers = _context.Users
+                        .Where(u => (u.RoleId == 3 && u.TeamId == teamId))
+                        .OrderByDescending(u => u.RoleId)
+                        .Select(u => new SelectListItem
+                        {
+                            Value = u.Id.ToString(),
+                            Text = $"{u.FirstName} {u.LastName}"
+                        })
+                        .ToList();
+                        ViewBag.Approvers = approvers;
+                    }
+                }
+                else if (roleId == 1)
+                {
+                    var approvers = _context.Users
+                        .Where(u => u.RoleId == 1 && u.Id != user.Id)
+                        .OrderByDescending(u => u.RoleId)
+                        .Select(u => new SelectListItem
+                        {
+                            Value = u.Id.ToString(),
+                            Text = $"{u.FirstName} {u.LastName}"
+                        })
+                        .ToList();
+                    ViewBag.Approvers = approvers;
+                }
+                else //(roleId == 3 || roleId == 4)
+                {
+                    var approvers = _context.Users
+                        .Where(u => u.RoleId == 1)
+                        .OrderByDescending(u => u.RoleId)
+                        .Select(u => new SelectListItem
+                        {
+                            Value = u.Id.ToString(),
+                            Text = $"{u.FirstName} {u.LastName}"
+                        })
+                        .ToList();
+                    ViewBag.Approvers = approvers;
+                }
 
-                ViewBag.Approvers = approvers;
+                //ViewBag.Approvers = approvers;
 
                 var applicantName = $"{user.FirstName} {user.LastName}";
                 ViewBag.ApplicantName = applicantName; // Pass the name to the view
