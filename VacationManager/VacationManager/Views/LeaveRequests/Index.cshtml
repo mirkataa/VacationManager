@@ -1,7 +1,15 @@
-﻿@model IEnumerable<VacationManager.Models.LeaveRequest>
+﻿@inject VacationManager.Data.ApplicationDbContext _context
+@model IEnumerable<VacationManager.Models.LeaveRequest>
 
 @{
     ViewData["Title"] = "Index";
+    var username = User.Identity.Name;
+    var user = _context.Users.SingleOrDefault(u => u.Username == username);
+    var today = DateTime.Today;
+    var usersOnVacation = _context.LeaveRequests
+        .Where(lr => lr.IsApproved && today >= lr.StartDate && today <= lr.EndDate)
+        .Select(lr => lr.ApplicantId)
+        .ToList();
 }
 
 <h1>Index</h1>
@@ -85,9 +93,49 @@
                 @Html.DisplayFor(modelItem => item.IsCompleted)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    @if (!item.IsApproved && !item.IsCompleted)
+                    {
+                        var approverbyRole = _context.Users.FirstOrDefault(u => u.Id == item.ApproverId);
+                        if (item.ApproverId != null && !usersOnVacation.Contains((int)item.ApproverId))
+                        {
+                            if (approverbyRole.RoleId == 3 && (user.RoleId == 1 || item.ApproverId == user.Id))
+                            {
+                                <form asp-action="Approve" asp-route-id="@item.Id" method="post">
+                                    <button type="submit">Approve</button>
+                                </form>
+
+                                <form asp-action="Reject" asp-route-id="@item.Id" method="post">
+                                    <button type="submit">Reject</button>
+                                </form>
+                            }
+                            else if (approverbyRole.RoleId == 1 && item.ApproverId == user.Id)
+                            {
+                                <form asp-action="Approve" asp-route-id="@item.Id" method="post">
+                                    <button type="submit">Approve</button>
+                                </form>
+
+                                <form asp-action="Reject" asp-route-id="@item.Id" method="post">
+                                    <button type="submit">Reject</button>
+                                </form>
+                            }
+                        }
+                        if (item.ApproverId != null && usersOnVacation.Contains((int)item.ApproverId) && user.RoleId == 1)
+                        {
+                            <form asp-action="Approve" asp-route-id="@item.Id" method="post">
+                                <button type="submit">Approve</button>
+                            </form>
+
+                            <form asp-action="Reject" asp-route-id="@item.Id" method="post">
+                                <button type="submit">Reject</button>
+                            </form>
+                        }
+                    }
+                    @if (item.ApplicantId == user.Id && !item.IsCompleted)
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit|</a> 
+                        <a asp-action="Details" asp-route-id="@item.Id">Details|</a> 
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    }
             </td>
         </tr>
 }
