@@ -43,6 +43,23 @@ namespace VacationManager.Controllers
             return View(leaveRequest);
         }
 
+        public async Task<IActionResult> Download(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var leaveRequest = await _context.LeaveRequests.FindAsync(id);
+            if (leaveRequest == null || leaveRequest.MedicalCertificate == null)
+            {
+                return NotFound();
+            }
+
+            // Return the file for download
+            return File(leaveRequest.MedicalCertificate, "application/octet-stream", "MedicalCertificate.pdf");
+        }
+
         // GET: LeaveRequests/Create
         public IActionResult Create()
         {
@@ -153,6 +170,21 @@ namespace VacationManager.Controllers
                 if (user != null)
                 {
                     leaveRequest.ApplicantId = user.Id;
+                }
+
+                // Handle the uploaded medical certificate file
+                if (Request.Form.Files.Count > 0)
+                {
+                    var medicalCertificateFile = Request.Form.Files[0];
+                    if (medicalCertificateFile.Length > 0)
+                    {
+                        // Read the file content into a byte array
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            await medicalCertificateFile.CopyToAsync(memoryStream);
+                            leaveRequest.MedicalCertificate = memoryStream.ToArray(); // Store the file content as a byte array
+                        }
+                    }
                 }
 
                 int currentYear = DateTime.Now.Year;

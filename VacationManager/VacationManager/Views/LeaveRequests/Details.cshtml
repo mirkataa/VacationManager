@@ -43,8 +43,15 @@
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.MedicalCertificate)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MedicalCertificate)
+        <dd class="col-sm-10">
+            @if (Model.MedicalCertificate != null)
+            {
+                <a asp-action="Download" asp-route-id="@Model.Id">Download Medical Certificate</a>
+            }
+            else
+            {
+                <span>No Medical Certificate Uploaded</span>
+            }
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.IsPaid)

@@ -27,7 +27,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.IsSickLeave)
             </th>
-            <th>
+            @* <th>
                 @Html.DisplayNameFor(model => model.MedicalCertificate)
             </th>
             <th>
@@ -35,13 +35,13 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.IsHalfDay)
-            </th>
+            </th> *@
             <th>
                 @Html.DisplayNameFor(model => model.IsApproved)
             </th>
-            <th>
+            @* <th>
                 @Html.DisplayNameFor(model => model.ApproverId)
-            </th>
+            </th> *@
             <th></th>
         </tr>
     </thead>
@@ -63,7 +63,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.IsSickLeave)
             </td>
-            <td>
+           @*  <td>
                 @Html.DisplayFor(modelItem => item.MedicalCertificate)
             </td>
             <td>
@@ -71,13 +71,13 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.IsHalfDay)
-            </td>
+            </td> *@
             <td>
                 @Html.DisplayFor(modelItem => item.IsApproved)
             </td>
-            <td>
+            @* <td>
                 @Html.DisplayFor(modelItem => item.ApproverId)
-            </td>
+            </td> *@
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |

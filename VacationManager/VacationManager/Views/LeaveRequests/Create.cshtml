@@ -106,60 +106,61 @@
 
         @* </div> *@
     </form>
-    <form id="medical-leave-form" asp-action="Create" style="display: none;">
+    <form id="medical-leave-form" asp-action="Create" enctype="multipart/form-data" style="display: none;">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <h1>Sick Leave</h1>
         <!-- Common fields for both normal and medical leave -->
         <div class="form-group" style="display: none;">
             <label asp-for="RequestCreationDate" class="control-label"></label>
-            <input asp-for="RequestCreationDate" class="form-control" />
+            <input asp-for="RequestCreationDate" class="form-control" id="medical-RequestCreationDate" />
             <span asp-validation-for="RequestCreationDate" class="text-danger"></span>
         </div>
         <!-- Fields for medical leave (initially hidden) -->
         <div id="medical-leave-fields">
             <div class="form-group" style="display: none;">
                 <label asp-for="ApplicantId" class="control-label"></label>
-                <input asp-for="ApplicantId" class="form-control" />
+                <input asp-for="ApplicantId" class="form-control" id="medical-ApplicantId" />
                 <span asp-validation-for="ApplicantId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="StartDate" class="control-label">I will be absent from work for medical reasons from</label>
-                <input asp-for="StartDate" class="form-control" />
+                <input asp-for="StartDate" class="form-control" id="medical-StartDate" type="date" />
                 <span asp-validation-for="StartDate" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="EndDate" class="control-label">through</label>
-                <input asp-for="EndDate" class="form-control" />
+                <input asp-for="EndDate" class="form-control" id="medical-EndDate" type="date" />
                 <span asp-validation-for="EndDate" class="text-danger"></span>
             </div>
             <div class="form-group form-check" style="display: none;">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsSickLeave" /> @Html.DisplayNameFor(model => model.IsSickLeave)
+                    <input class="form-check-input" asp-for="IsSickLeave" id="medical-IsSickLeave" checked="true" /> @Html.DisplayNameFor(model => model.IsSickLeave)
                 </label>
             </div>
             <div class="form-group">
                 <label asp-for="MedicalCertificate" class="control-label"></label>
-                <input asp-for="MedicalCertificate" type="file" class="form-control" />
+                <input asp-for="MedicalCertificate" type="file" class="form-control" id="medical-MedicalCertificate" accept="application/pdf" required onchange="validateFile(this)" />
                 <span asp-validation-for="MedicalCertificate" class="text-danger"></span>
             </div>
+            <span id="pdf-error-message" class="text-danger"></span>
             <div class="form-group form-check" style="display: none;">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsPaid" /> @Html.DisplayNameFor(model => model.IsPaid)
+                    <input class="form-check-input" asp-for="IsPaid" id="medical-IsPaid" /> @Html.DisplayNameFor(model => model.IsPaid)
                 </label>
             </div>
             <div class="form-group form-check" style="display: none;">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsHalfDay" /> @Html.DisplayNameFor(model => model.IsHalfDay)
+                    <input class="form-check-input" asp-for="IsHalfDay" id="medical-IsHalfDay" /> @Html.DisplayNameFor(model => model.IsHalfDay)
                 </label>
             </div>
             <div class="form-group form-check" style="display: none;">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsApproved" /> @Html.DisplayNameFor(model => model.IsApproved)
+                    <input class="form-check-input" asp-for="IsApproved" id="medical-IsApproved" checked="true" /> @Html.DisplayNameFor(model => model.IsApproved)
                 </label>
             </div>
             <div class="form-group" style="display: none;">
                 <label asp-for="ApproverId" class="control-label"></label>
-                <input asp-for="ApproverId" class="form-control" />
+                <input asp-for="ApproverId" class="form-control" id="medical-ApproverId" />
                 <span asp-validation-for="ApproverId" class="text-danger"></span>
             </div>
         </div>
@@ -170,10 +171,10 @@
         </div>
 
         <div class="form-group">
-            <input type="submit" value="Create" class="btn btn-primary" />
+            <input type="submit" value="Create" class="btn btn-primary" id="medicalButton" />
         </div>
     </form>
-    <button id="back-button">Back</button>
+   @*  <button id="back-button">Back</button> *@
 </div>
 
 <div>
@@ -206,10 +207,10 @@
             //document.getElementById('medical-leave-fields').style.display = 'block';
         });
 
-        document.getElementById('back-button').addEventListener('click', function () {
+        /*document.getElementById('back-button').addEventListener('click', function () {
             document.getElementById('form-container').style.display = 'none';
             document.getElementById('button-container').style.display = 'block';
-        });
+        });*/
 
         // Event listener for form submission
         document.getElementById('normal-leave-form').addEventListener('submit', function (event) {
@@ -335,7 +336,7 @@
         }
 
         // Add event listener to the back button
-        document.getElementById('back-button').addEventListener('click', resetDatesToNextDay);
+        //document.getElementById('back-button').addEventListener('click', resetDatesToNextDay);
 
         document.addEventListener("DOMContentLoaded", function () {
             // Get the elements
@@ -437,5 +438,50 @@
             handleIsPaidChange();
         });
 
+        //NEW FOR MEDICAL
+        document.addEventListener("DOMContentLoaded", function () {
+            // Get the elements
+            var startDateField = document.getElementById('medical-StartDate');
+            var endDateField = document.getElementById('medical-EndDate');
+
+            // Add event listeners for field changes
+            startDateField.addEventListener('change', handleDateChange);
+            endDateField.addEventListener('change', handleDateChange);
+
+            // Function to handle changes in the start date and end date fields
+            function handleDateChange() {
+                var startDate = new Date(startDateField.value);
+                var endDate = new Date(endDateField.value);
+
+                // Check if EndDate is less than StartDate
+                if (endDate < startDate) {
+                    // Set EndDate to be the same as StartDate
+                    endDateField.value = startDateField.value;
+                }
+            }
+        });
+        function validateFile(input) {
+            const file = input.files[0];
+            const fileName = file.name;
+            const createButton = document.getElementById('medicalButton');
+            const fileExtension = fileName.split('.').pop().toLowerCase();
+
+            if (fileExtension !== 'pdf') {
+                // Hide the create button
+                createButton.style.display = 'none';
+
+                // Display an error message
+                const errorMessage = document.querySelector('#pdf-error-message');
+                errorMessage.textContent = 'Please select a PDF file.';
+            } else {
+                // Show the create button
+
+                createButton.style.display = 'block';
+
+                // Clear the error message
+                const errorMessage = document.querySelector('#pdf-error-message');
+                errorMessage.textContent = '';
+            }
+        }
     </script>
 }
