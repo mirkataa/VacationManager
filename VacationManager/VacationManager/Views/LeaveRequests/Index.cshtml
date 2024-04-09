@@ -100,32 +100,32 @@
                         {
                             if (approverbyRole.RoleId == 3 && (user.RoleId == 1 || item.ApproverId == user.Id))
                             {
-                                <form asp-action="Approve" asp-route-id="@item.Id" method="post">
+                                <form asp-action="ApproveRequest" asp-route-id="@item.Id" method="post">
                                     <button type="submit">Approve</button>
                                 </form>
 
-                                <form asp-action="Reject" asp-route-id="@item.Id" method="post">
+                                <form asp-action="RejectRequest" asp-route-id="@item.Id" method="post">
                                     <button type="submit">Reject</button>
                                 </form>
                             }
                             else if (approverbyRole.RoleId == 1 && item.ApproverId == user.Id)
                             {
-                                <form asp-action="Approve" asp-route-id="@item.Id" method="post">
+                                <form asp-action="ApproveRequest" asp-route-id="@item.Id" method="post">
                                     <button type="submit">Approve</button>
                                 </form>
 
-                                <form asp-action="Reject" asp-route-id="@item.Id" method="post">
+                                <form asp-action="RejectRequest" asp-route-id="@item.Id" method="post">
                                     <button type="submit">Reject</button>
                                 </form>
                             }
                         }
                         if (item.ApproverId != null && usersOnVacation.Contains((int)item.ApproverId) && user.RoleId == 1)
                         {
-                            <form asp-action="Approve" asp-route-id="@item.Id" method="post">
+                            <form asp-action="ApproveRequest" asp-route-id="@item.Id" method="post">
                                 <button type="submit">Approve</button>
                             </form>
 
-                            <form asp-action="Reject" asp-route-id="@item.Id" method="post">
+                            <form asp-action="RejectRequest" asp-route-id="@item.Id" method="post">
                                 <button type="submit">Reject</button>
                             </form>
                         }

@@ -25,6 +25,106 @@ namespace VacationManager.Controllers
             return View(await _context.LeaveRequests.ToListAsync());
         }
 
+        [HttpPost]
+        public async Task<IActionResult> ApproveRequest(int id)
+        {
+            var leaveRequest = await _context.LeaveRequests.FirstOrDefaultAsync(lr => lr.Id == id);
+
+            if (leaveRequest != null)
+            {
+                leaveRequest.IsApproved = true;
+                leaveRequest.IsCompleted = true;
+                await _context.SaveChangesAsync();
+                if (leaveRequest.IsPaid)
+                {
+                    // Calculate workdays between start and end date
+                    var workdays = CalculateWeekdays(leaveRequest.StartDate, leaveRequest.EndDate);
+
+                    // Fetch the user associated with the leave request
+                    var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == leaveRequest.ApplicantId);
+                    var currentYear = DateTime.Now.Year;
+                    var previousYear = currentYear - 1;
+
+                    if (user != null)
+                    {
+                        var vacationDaysThisYear = _context.VacationDaysModel
+                       .Where(v => v.UserId == user.Id && v.Year == currentYear)
+                       .FirstOrDefault();
+
+                        var vacationDaysPreviousYear = _context.VacationDaysModel
+                       .Where(v => v.UserId == user.Id && v.Year == previousYear)
+                       .FirstOrDefault();
+
+                        if (vacationDaysPreviousYear != null)
+                        {
+                            if (leaveRequest.IsHalfDay)
+                            {
+                                if (vacationDaysPreviousYear.PendingDays >= 0.5)
+                                {
+                                    vacationDaysPreviousYear.PendingDays -= 0.5;
+                                    vacationDaysPreviousYear.UsedDays += 0.5;
+                                }
+                                else
+                                {
+                                    vacationDaysThisYear.PendingDays -= 0.5;
+                                    vacationDaysThisYear.UsedDays += 0.5;
+                                }
+                            }
+                            else
+                            {
+                                if (vacationDaysPreviousYear.PendingDays >= workdays)
+                                {
+                                    vacationDaysPreviousYear.PendingDays -= workdays;
+                                    vacationDaysPreviousYear.UsedDays += workdays;
+                                }
+                                else
+                                {
+                                    vacationDaysPreviousYear.UsedDays += vacationDaysPreviousYear.PendingDays;
+                                    workdays -= (int)vacationDaysPreviousYear.PendingDays;
+                                    vacationDaysPreviousYear.PendingDays = 0;
+                                    vacationDaysThisYear.PendingDays -= workdays;
+                                    vacationDaysThisYear.UsedDays += workdays;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (leaveRequest.IsHalfDay)
+                            {
+                                vacationDaysThisYear.PendingDays -= 0.5;
+                                vacationDaysThisYear.UsedDays += 0.5;
+                            }
+                            else
+                            {
+                                vacationDaysThisYear.PendingDays -= workdays;
+                                vacationDaysThisYear.UsedDays += workdays;
+                            }
+                        }
+
+                        // Save changes to the database
+                        await _context.SaveChangesAsync();
+                    }
+                }
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RejectRequest(int id)
+        {
+            var leaveRequest = await _context.LeaveRequests.FirstOrDefaultAsync(lr => lr.Id == id);
+
+            if (leaveRequest != null)
+            {
+                // TODO
+
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Index");
+        }
+
         // GET: LeaveRequests/Details/5
         public async Task<IActionResult> Details(int? id)
         {
