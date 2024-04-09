@@ -28,20 +28,23 @@
                 @Html.DisplayNameFor(model => model.IsSickLeave)
             </th>
             @* <th>
-                @Html.DisplayNameFor(model => model.MedicalCertificate)
+            @Html.DisplayNameFor(model => model.MedicalCertificate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IsPaid)
+            @Html.DisplayNameFor(model => model.IsPaid)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IsHalfDay)
+            @Html.DisplayNameFor(model => model.IsHalfDay)
             </th> *@
             <th>
                 @Html.DisplayNameFor(model => model.IsApproved)
             </th>
             @* <th>
-                @Html.DisplayNameFor(model => model.ApproverId)
+            @Html.DisplayNameFor(model => model.ApproverId)
             </th> *@
+            <th>
+                @Html.DisplayNameFor(model => model.IsCompleted)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -78,6 +81,9 @@
             @* <td>
                 @Html.DisplayFor(modelItem => item.ApproverId)
             </td> *@
+            <td>
+                @Html.DisplayFor(modelItem => item.IsCompleted)
+            </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |

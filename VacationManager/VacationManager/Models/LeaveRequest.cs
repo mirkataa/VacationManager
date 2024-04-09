@@ -13,5 +13,6 @@
         public bool IsHalfDay { get; set; }
         public bool IsApproved { get; set; }
         public int? ApproverId { get; set; } // Foreign key for User, nullable
+        public bool IsCompleted { get; set; }
     }
 }

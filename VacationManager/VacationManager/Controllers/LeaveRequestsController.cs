@@ -152,7 +152,7 @@ namespace VacationManager.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,RequestCreationDate,ApplicantId,StartDate,EndDate,IsSickLeave,MedicalCertificate,IsPaid,IsHalfDay,IsApproved,ApproverId")] LeaveRequest leaveRequest, double previousYearDays, double currentYearDays)
+        public async Task<IActionResult> Create([Bind("Id,RequestCreationDate,ApplicantId,StartDate,EndDate,IsSickLeave,MedicalCertificate,IsPaid,IsHalfDay,IsApproved,ApproverId,IsCompleted")] LeaveRequest leaveRequest, double previousYearDays, double currentYearDays)
         {
             if (ModelState.IsValid)
             {
@@ -247,7 +247,7 @@ namespace VacationManager.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,RequestCreationDate,ApplicantId,StartDate,EndDate,IsSickLeave,MedicalCertificate,IsPaid,IsHalfDay,IsApproved,ApproverId")] LeaveRequest leaveRequest)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,RequestCreationDate,ApplicantId,StartDate,EndDate,IsSickLeave,MedicalCertificate,IsPaid,IsHalfDay,IsApproved,ApproverId,IsCompleted")] LeaveRequest leaveRequest)
         {
             if (id != leaveRequest.Id)
             {
