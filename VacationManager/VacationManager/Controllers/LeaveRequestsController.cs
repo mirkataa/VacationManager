@@ -677,6 +677,74 @@ namespace VacationManager.Controllers
             {
                 try
                 {
+                    var username = User.Identity.Name;
+
+                    var user = _context.Users.SingleOrDefault(u => u.Username == username);
+
+                    // If the user is found, populate the ApplicantId field with their first and last name
+                    if (user != null)
+                    {
+                        var teamId = user.TeamId;
+                        var roleId = user.RoleId;
+                        var teams = _context.Teams.ToList();
+
+                        if (teamId != null && roleId != 3 && roleId != 1 && roleId != 4)
+                        {
+                            var userTeam = teams.FirstOrDefault(t => t.Id == teamId);
+                            if (userTeam.TeamLeaderId == null)
+                            {
+                                var approvers = _context.Users
+                                .Where(u => u.RoleId == 1)
+                                .OrderByDescending(u => u.RoleId)
+                                .Select(u => new SelectListItem
+                                {
+                                    Value = u.Id.ToString(),
+                                    Text = $"{u.FirstName} {u.LastName}"
+                                })
+                                .ToList();
+                                ViewBag.Approvers = approvers;
+                            }
+                            else
+                            {
+                                var approvers = _context.Users
+                                .Where(u => (u.RoleId == 3 && u.TeamId == teamId))
+                                .OrderByDescending(u => u.RoleId)
+                                .Select(u => new SelectListItem
+                                {
+                                    Value = u.Id.ToString(),
+                                    Text = $"{u.FirstName} {u.LastName}"
+                                })
+                                .ToList();
+                                ViewBag.Approvers = approvers;
+                            }
+                        }
+                        else if (roleId == 1)
+                        {
+                            var approvers = _context.Users
+                                .Where(u => u.RoleId == 1 && u.Id != user.Id)
+                                .OrderByDescending(u => u.RoleId)
+                                .Select(u => new SelectListItem
+                                {
+                                    Value = u.Id.ToString(),
+                                    Text = $"{u.FirstName} {u.LastName}"
+                                })
+                                .ToList();
+                            ViewBag.Approvers = approvers;
+                        }
+                        else //(roleId == 3 || roleId == 4)
+                        {
+                            var approvers = _context.Users
+                                .Where(u => u.RoleId == 1)
+                                .OrderByDescending(u => u.RoleId)
+                                .Select(u => new SelectListItem
+                                {
+                                    Value = u.Id.ToString(),
+                                    Text = $"{u.FirstName} {u.LastName}"
+                                })
+                                .ToList();
+                            ViewBag.Approvers = approvers;
+                        }
+                    }
                     // Get the original entry from the database
                     var originalLeaveRequest = await _context.LeaveRequests.FindAsync(id);
                     if (originalLeaveRequest == null)
@@ -696,6 +764,18 @@ namespace VacationManager.Controllers
                                 .SingleOrDefault(v => v.UserId == leaveRequest.ApplicantId && v.Year == currentYear);
                             var vacationDaysPreviousYear = _context.VacationDaysModel
                                 .SingleOrDefault(v => v.UserId == leaveRequest.ApplicantId && v.Year == previousYear);
+
+                            var sumVacDays = vacationDaysPreviousYear.VacationDays + vacationDaysCurrentYear.VacationDays;
+                            var sumUsedDays = vacationDaysPreviousYear.UsedDays + vacationDaysCurrentYear.UsedDays;
+                            var sumPendingDays = vacationDaysPreviousYear.PendingDays + vacationDaysCurrentYear.PendingDays;
+
+                            var leftDaysWhole = sumVacDays - (sumUsedDays + sumPendingDays) + oldWorkDays;
+                            if (newWorkDays > leftDaysWhole)
+                            {
+                                ModelState.AddModelError(string.Empty, "You do not have enough vacation days available to cover the requested period.");
+                                return View(leaveRequest); // Display error message in the view
+                            }
+
                             if (newWorkDays > oldWorkDays)
                             {
                                 var diff = newWorkDays - oldWorkDays;
