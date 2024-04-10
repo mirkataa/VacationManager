@@ -59,17 +59,24 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.RequestCreationDate)
+             <td>
+                @item.RequestCreationDate.ToString("dd-MM-yyyy")
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ApplicantId)
+                @* @Html.DisplayFor(modelItem => item.ApplicantId) *@
+                    @{
+                        var applicant = _context.Users.FirstOrDefault(u => u.Id == item.ApplicantId);
+                        if (applicant != null)
+                        {
+                            @Html.DisplayFor(modelItem => applicant.FirstName) @Html.Raw(" ") @Html.DisplayFor(modelItem => applicant.LastName)
+                        }
+                    }
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.StartDate)
+                @item.StartDate.ToString("dd-MM-yyyy")
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.EndDate)
+                @item.EndDate.ToString("dd-MM-yyyy")
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.IsSickLeave)
