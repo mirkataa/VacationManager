@@ -315,6 +315,19 @@
                     previousYearDaysField.value = Math.min(weekdaysBetweenDates, maxDays);
                     currentYearDaysField.value = Math.max(weekdaysBetweenDates - previousYearDaysField.value, 0);
                 }
+
+                var A = parseFloat(previousYearDaysField.value);
+                var B = parseFloat(currentYearDaysField.value);
+                var submitButton = document.querySelector('input[type="submit"]');
+                var leftPrevD = parseFloat(previousYearDaysField.getAttribute('max'));
+                var leftCurrD = parseFloat(currentYearDaysField.getAttribute('max'));
+
+                if (isPaidCheckbox.checked && (leftPrevD < A || leftCurrD < B)) {
+                    submitButton.style.display = 'none';
+                    alert('You do not have enough vacation days left!');
+                } else {
+                    submitButton.style.display = 'block';
+                }
             }
         }
 
@@ -437,6 +450,8 @@
                 if (!isPaidCheckbox.checked) {
                     previousYearDaysField.value = 0;
                     currentYearDaysField.value = 0;
+                    var submitButton = document.querySelector('input[type="submit"]');
+                    submitButton.style.display = 'block';
                 }
                 else {
                     handleDateChange();
