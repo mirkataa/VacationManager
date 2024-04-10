@@ -22,7 +22,15 @@ namespace VacationManager.Controllers
         // GET: LeaveRequests
         public async Task<IActionResult> Index()
         {
-            return View(await _context.LeaveRequests.ToListAsync());
+            var leaveRequests = await _context.LeaveRequests.ToListAsync();
+
+            // Update IsAway for each applicant
+            foreach (var leaveRequest in leaveRequests)
+            {
+                await UpdateIsAwayForUser(leaveRequest.ApplicantId);
+            }
+
+            return View(leaveRequests);
         }
 
         [HttpPost]
@@ -34,18 +42,19 @@ namespace VacationManager.Controllers
             {
                 leaveRequest.IsApproved = true;
                 leaveRequest.IsCompleted = true;
+                // Fetch the user associated with the leave request
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == leaveRequest.ApplicantId);
+               // user.IsAway = true;
                 await _context.SaveChangesAsync();
                 if (leaveRequest.IsPaid)
                 {
                     // Calculate workdays between start and end date
                     var workdays = CalculateWeekdays(leaveRequest.StartDate, leaveRequest.EndDate);
 
-                    // Fetch the user associated with the leave request
-                    var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == leaveRequest.ApplicantId);
                     var currentYear = DateTime.Now.Year;
                     var previousYear = currentYear - 1;
 
-                    if (user != null)
+                    if (user != null && workdays > 0)
                     {
                         var vacationDaysThisYear = _context.VacationDaysModel
                        .Where(v => v.UserId == user.Id && v.Year == currentYear)
@@ -105,6 +114,7 @@ namespace VacationManager.Controllers
                         await _context.SaveChangesAsync();
                     }
                 }
+                await UpdateIsAwayForUser(leaveRequest.ApplicantId);
             }
 
             return RedirectToAction("Index");
@@ -117,12 +127,98 @@ namespace VacationManager.Controllers
 
             if (leaveRequest != null)
             {
-                // TODO
-
+                leaveRequest.IsApproved = false;
+                leaveRequest.IsCompleted = true;
                 await _context.SaveChangesAsync();
+                if (leaveRequest.IsPaid)
+                {
+                    // Calculate workdays between start and end date
+                    var workdays = CalculateWeekdays(leaveRequest.StartDate, leaveRequest.EndDate);
+
+                    // Fetch the user associated with the leave request
+                    var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == leaveRequest.ApplicantId);
+                    var currentYear = DateTime.Now.Year;
+                    var previousYear = currentYear - 1;
+
+                    if (user != null && workdays > 0)
+                    {
+                        var vacationDaysThisYear = _context.VacationDaysModel
+                       .Where(v => v.UserId == user.Id && v.Year == currentYear)
+                       .FirstOrDefault();
+
+                        var vacationDaysPreviousYear = _context.VacationDaysModel
+                       .Where(v => v.UserId == user.Id && v.Year == previousYear)
+                       .FirstOrDefault();
+
+                        if (vacationDaysPreviousYear != null)
+                        {
+                            if (leaveRequest.IsHalfDay)
+                            {
+                                if (vacationDaysPreviousYear.PendingDays >= 0.5)
+                                {
+                                    vacationDaysPreviousYear.PendingDays -= 0.5;
+                                }
+                                else
+                                {
+                                    vacationDaysThisYear.PendingDays -= 0.5;
+                                }
+                            }
+                            else
+                            {
+                                if (vacationDaysPreviousYear.PendingDays >= workdays)
+                                {
+                                    vacationDaysPreviousYear.PendingDays -= workdays;
+                                }
+                                else
+                                {
+                                    workdays -= (int)vacationDaysPreviousYear.PendingDays;
+                                    vacationDaysPreviousYear.PendingDays = 0;
+                                    vacationDaysThisYear.PendingDays -= workdays;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (leaveRequest.IsHalfDay)
+                            {
+                                vacationDaysThisYear.PendingDays -= 0.5;
+                            }
+                            else
+                            {
+                                vacationDaysThisYear.PendingDays -= workdays;
+                            }
+                        }
+
+                        // Save changes to the database
+                        await _context.SaveChangesAsync();
+                    }
+                }
+                await UpdateIsAwayForUser(leaveRequest.ApplicantId);
             }
 
             return RedirectToAction("Index");
+        }
+
+        private async Task UpdateIsAwayForUser(int userId)
+        {
+            var today = DateTime.Today;
+
+            var leaveRequests = await _context.LeaveRequests
+                .Where(lr => lr.ApplicantId == userId && lr.IsApproved && lr.IsCompleted && today >= lr.StartDate && today <= lr.EndDate)
+                .ToListAsync();
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (leaveRequests.Any())
+            {
+                user.IsAway = true;
+            }
+            else
+            {
+                user.IsAway = false;
+            }
+
+            await _context.SaveChangesAsync();
         }
 
         // GET: LeaveRequests/Details/5
@@ -348,6 +444,115 @@ namespace VacationManager.Controllers
                     _context.Update(vacationDaysCurrentYear);
                     vacationDaysPreviousYear.PendingDays += previousYearDays;
                     _context.Update(vacationDaysPreviousYear);
+                }
+
+                if (leaveRequest.IsSickLeave)
+                {
+                    var sickStart = leaveRequest.StartDate;
+                    var sickEnd = leaveRequest.EndDate;
+
+                    // Leaverequests that have started before the sick leave and continue during or after the sick leave
+                    var intersectBeforeAndDuring = await _context.LeaveRequests
+                        .Where(lr => lr.ApplicantId == leaveRequest.ApplicantId && lr.IsApproved && lr.IsCompleted &&
+                                     lr.StartDate < sickStart && lr.EndDate >= sickStart)
+                        .ToListAsync();
+
+                    // Leaverequests that intersect with the sick leave (including those that start during or end during the sick leave)
+                    var intersectWithSickLeave = await _context.LeaveRequests
+                        .Where(lr => lr.ApplicantId == leaveRequest.ApplicantId && lr.IsApproved && lr.IsCompleted &&
+                                     lr.StartDate <= sickEnd && lr.EndDate >= sickStart)
+                        .ToListAsync();
+
+                    foreach (var item in intersectWithSickLeave)
+                    {
+
+                        var workingDays = CalculateWeekdays(item.StartDate, item.EndDate);
+                        var itemApplicant = await _context.Users.FirstOrDefaultAsync(u => u.Id == item.ApplicantId);
+
+                        if (itemApplicant != null && workingDays > 0 && item.IsPaid)
+                        {
+                            var vacDaysThisYear = _context.VacationDaysModel
+                           .Where(v => v.UserId == itemApplicant.Id && v.Year == currentYear)
+                           .FirstOrDefault();
+
+                            var vacDaysPreviousYear = _context.VacationDaysModel
+                           .Where(v => v.UserId == itemApplicant.Id && v.Year == previousYear)
+                           .FirstOrDefault();
+
+                            if (vacDaysPreviousYear != null)
+                            {
+                                if (item.IsHalfDay)
+                                {
+                                    if (vacDaysThisYear.UsedDays > 0)
+                                    {
+                                        vacDaysThisYear.UsedDays -= 0.5;
+                                    }
+                                    else
+                                    {
+                                        vacDaysPreviousYear.UsedDays -= 0.5;
+                                    }
+                                }
+                                else
+                                {
+                                    if (vacDaysThisYear.UsedDays >= workingDays)
+                                    {
+                                        vacDaysThisYear.UsedDays -= workingDays;
+                                    }
+                                    else
+                                    {
+                                        workingDays -= (int)vacDaysThisYear.UsedDays;
+                                        vacDaysThisYear.UsedDays = 0;
+                                        vacDaysPreviousYear.UsedDays -= workingDays;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (item.IsHalfDay)
+                                {
+                                    vacDaysThisYear.UsedDays -= 0.5;
+                                }
+                                else
+                                {
+                                    vacDaysThisYear.UsedDays -= workingDays;
+                                }
+                            }
+
+                            await _context.SaveChangesAsync();
+
+                            if (intersectBeforeAndDuring.Contains(item) && item.IsPaid)
+                            {
+                                var daysToGet = CalculateWeekdays(item.StartDate, sickStart);
+                                if (daysToGet > 0 && vacDaysPreviousYear.VacationDays > vacDaysPreviousYear.UsedDays)
+                                {
+                                    if (daysToGet <= (vacDaysPreviousYear.VacationDays - vacDaysPreviousYear.UsedDays))
+                                    {
+                                        vacDaysPreviousYear.UsedDays += daysToGet;
+                                    }
+                                    else
+                                    {
+                                        var sup = vacDaysPreviousYear.VacationDays - vacDaysPreviousYear.UsedDays;
+                                        daysToGet = daysToGet - (int)sup;
+                                        vacDaysPreviousYear.UsedDays += (int)sup;
+                                        vacDaysThisYear.UsedDays += daysToGet;
+                                    }
+                                }
+                                else if (daysToGet > 0)
+                                {
+                                    vacDaysThisYear.UsedDays += daysToGet;
+                                }
+                            }
+
+                            // Save changes to the database
+                            item.IsApproved = false;
+                            await _context.SaveChangesAsync();
+                        }
+                        else if (itemApplicant != null && !item.IsSickLeave)
+                        {
+                            item.IsApproved = false;
+                            await _context.SaveChangesAsync();
+                        }
+                    }
                 }
 
                 _context.Add(leaveRequest);

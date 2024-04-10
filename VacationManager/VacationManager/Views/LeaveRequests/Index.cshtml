@@ -98,7 +98,7 @@
                         var approverbyRole = _context.Users.FirstOrDefault(u => u.Id == item.ApproverId);
                         if (item.ApproverId != null && !usersOnVacation.Contains((int)item.ApproverId))
                         {
-                            if (approverbyRole.RoleId == 3 && (user.RoleId == 1 || item.ApproverId == user.Id))
+                            if (approverbyRole.RoleId == 3 && ((user.RoleId == 1 && !usersOnVacation.Contains(user.Id)) || item.ApproverId == user.Id))
                             {
                                 <form asp-action="ApproveRequest" asp-route-id="@item.Id" method="post">
                                     <button type="submit">Approve</button>
@@ -119,7 +119,7 @@
                                 </form>
                             }
                         }
-                        if (item.ApproverId != null && usersOnVacation.Contains((int)item.ApproverId) && user.RoleId == 1)
+                         if (item.ApproverId != null && usersOnVacation.Contains((int)item.ApproverId) && user.RoleId == 1 && !usersOnVacation.Contains(user.Id))
                         {
                             <form asp-action="ApproveRequest" asp-route-id="@item.Id" method="post">
                                 <button type="submit">Approve</button>
@@ -136,7 +136,11 @@
                         <a asp-action="Details" asp-route-id="@item.Id">Details|</a> 
                         <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                     }
-            </td>
+                    else if (item.ApplicantId == user.Id)
+                    {
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                    }
+                </td>
         </tr>
 }
     </tbody>
