@@ -400,10 +400,6 @@ namespace VacationManager.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Validate the total number of days
-                /* var startDate = leaveRequest.StartDate;
-                 var endDate = leaveRequest.EndDate;
-                 var workdays = CalculateWeekdays(startDate, endDate);*/
 
                 // Fetch the current user's username
                 var username = User.Identity.Name;
@@ -592,6 +588,76 @@ namespace VacationManager.Controllers
             {
                 return NotFound();
             }
+
+            var username = User.Identity.Name;
+
+            var user = _context.Users.SingleOrDefault(u => u.Username == username);
+
+            // If the user is found, populate the ApplicantId field with their first and last name
+            if (user != null)
+            {
+                var teamId = user.TeamId;
+                var roleId = user.RoleId;
+                var teams = _context.Teams.ToList();
+
+                if (teamId != null && roleId != 3 && roleId != 1 && roleId != 4)
+                {
+                    var userTeam = teams.FirstOrDefault(t => t.Id == teamId);
+                    if (userTeam.TeamLeaderId == null)
+                    {
+                        var approvers = _context.Users
+                        .Where(u => u.RoleId == 1)
+                        .OrderByDescending(u => u.RoleId)
+                        .Select(u => new SelectListItem
+                        {
+                            Value = u.Id.ToString(),
+                            Text = $"{u.FirstName} {u.LastName}"
+                        })
+                        .ToList();
+                        ViewBag.Approvers = approvers;
+                    }
+                    else
+                    {
+                        var approvers = _context.Users
+                        .Where(u => (u.RoleId == 3 && u.TeamId == teamId))
+                        .OrderByDescending(u => u.RoleId)
+                        .Select(u => new SelectListItem
+                        {
+                            Value = u.Id.ToString(),
+                            Text = $"{u.FirstName} {u.LastName}"
+                        })
+                        .ToList();
+                        ViewBag.Approvers = approvers;
+                    }
+                }
+                else if (roleId == 1)
+                {
+                    var approvers = _context.Users
+                        .Where(u => u.RoleId == 1 && u.Id != user.Id)
+                        .OrderByDescending(u => u.RoleId)
+                        .Select(u => new SelectListItem
+                        {
+                            Value = u.Id.ToString(),
+                            Text = $"{u.FirstName} {u.LastName}"
+                        })
+                        .ToList();
+                    ViewBag.Approvers = approvers;
+                }
+                else //(roleId == 3 || roleId == 4)
+                {
+                    var approvers = _context.Users
+                        .Where(u => u.RoleId == 1)
+                        .OrderByDescending(u => u.RoleId)
+                        .Select(u => new SelectListItem
+                        {
+                            Value = u.Id.ToString(),
+                            Text = $"{u.FirstName} {u.LastName}"
+                        })
+                        .ToList();
+                    ViewBag.Approvers = approvers;
+                }
+            }
+
             return View(leaveRequest);
         }
 
@@ -611,6 +677,111 @@ namespace VacationManager.Controllers
             {
                 try
                 {
+                    // Get the original entry from the database
+                    var originalLeaveRequest = await _context.LeaveRequests.FindAsync(id);
+                    if (originalLeaveRequest == null)
+                    {
+                        return NotFound();
+                    }
+                    _context.Entry(originalLeaveRequest).State = EntityState.Detached;
+                    if (originalLeaveRequest.IsPaid)
+                    {
+                        if (!originalLeaveRequest.IsHalfDay)
+                        {
+                            var newWorkDays = CalculateWeekdays(leaveRequest.StartDate, leaveRequest.EndDate);
+                            var oldWorkDays = CalculateWeekdays(originalLeaveRequest.StartDate, originalLeaveRequest.EndDate);
+                            int currentYear = DateTime.Now.Year;
+                            int previousYear = currentYear - 1;
+                            var vacationDaysCurrentYear = _context.VacationDaysModel
+                                .SingleOrDefault(v => v.UserId == leaveRequest.ApplicantId && v.Year == currentYear);
+                            var vacationDaysPreviousYear = _context.VacationDaysModel
+                                .SingleOrDefault(v => v.UserId == leaveRequest.ApplicantId && v.Year == previousYear);
+                            if (newWorkDays > oldWorkDays)
+                            {
+                                var diff = newWorkDays - oldWorkDays;
+                                if (vacationDaysPreviousYear != null)
+                                {
+                                    if (vacationDaysPreviousYear.PendingDays + vacationDaysPreviousYear.UsedDays + diff <= vacationDaysPreviousYear.VacationDays)
+                                    {
+                                        vacationDaysPreviousYear.PendingDays += diff;
+                                    }
+                                    else
+                                    {
+                                        var sub = vacationDaysPreviousYear.VacationDays - (vacationDaysPreviousYear.PendingDays + vacationDaysPreviousYear.UsedDays);
+                                        diff -= (int)sub;
+                                        vacationDaysCurrentYear.PendingDays += diff;
+                                    }
+                                }
+                                else
+                                {
+                                    vacationDaysCurrentYear.PendingDays += diff;
+                                }
+                            }
+                            else if (newWorkDays < oldWorkDays)
+                            {
+                                var diff = oldWorkDays - newWorkDays;
+                                if (vacationDaysPreviousYear != null)
+                                {
+                                    if (vacationDaysCurrentYear.PendingDays >= diff)
+                                    {
+                                        vacationDaysCurrentYear.PendingDays -= diff;
+                                    }
+                                    else
+                                    {
+                                        var sub = diff - vacationDaysCurrentYear.PendingDays;
+                                        vacationDaysCurrentYear.PendingDays = 0;
+                                        vacationDaysPreviousYear.PendingDays -= sub;
+                                    }
+                                }
+                                else
+                                {
+                                    vacationDaysCurrentYear.PendingDays -= diff;
+                                }
+                            }
+                            await _context.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            var newWorkDays = CalculateWeekdays(leaveRequest.StartDate, leaveRequest.EndDate);
+                            var oldWorkDays = CalculateWeekdays(originalLeaveRequest.StartDate, originalLeaveRequest.EndDate);
+                            int currentYear = DateTime.Now.Year;
+                            int previousYear = currentYear - 1;
+                            var vacationDaysCurrentYear = _context.VacationDaysModel
+                                .SingleOrDefault(v => v.UserId == leaveRequest.ApplicantId && v.Year == currentYear);
+                            var vacationDaysPreviousYear = _context.VacationDaysModel
+                                .SingleOrDefault(v => v.UserId == leaveRequest.ApplicantId && v.Year == previousYear);
+                            if (newWorkDays > oldWorkDays)
+                            {
+                                if (vacationDaysPreviousYear != null)
+                                {
+                                    if (vacationDaysPreviousYear.PendingDays + vacationDaysPreviousYear.UsedDays + 0.5 <= vacationDaysPreviousYear.VacationDays)
+                                    {
+                                        vacationDaysPreviousYear.PendingDays += 0.5;
+                                    }
+                                    else
+                                    {
+                                        vacationDaysCurrentYear.PendingDays += 0.5;
+                                    }
+                                }
+                                else
+                                {
+                                    vacationDaysCurrentYear.PendingDays += 0.5;
+                                }
+                            }
+                            else if (newWorkDays < oldWorkDays)
+                            {
+                                if (vacationDaysCurrentYear.PendingDays >= 0.5)
+                                {
+                                    vacationDaysCurrentYear.PendingDays -= 0.5;
+                                }
+                                else
+                                {
+                                    vacationDaysPreviousYear.PendingDays -= 0.5;
+                                }
+                            }
+                            await _context.SaveChangesAsync();
+                        }
+                    }
                     _context.Update(leaveRequest);
                     await _context.SaveChangesAsync();
                 }
