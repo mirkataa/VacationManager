@@ -4,9 +4,8 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1>Edit Leave Request</h1>
 
-<h4>LeaveRequest</h4>
 @if (Model.IsHalfDay)
 {
     <div class="alert alert-info" role="alert">You are editing a request for half-day leave</div>
@@ -58,18 +57,18 @@
                 </label>
             </div>
             <div class="form-group">
-                <label asp-for="StartDate" class="control-label"></label>
+                <label asp-for="StartDate" class="control-label">Start Date</label>
                 <input asp-for="StartDate" class="form-control" type="date" />
                 <span asp-validation-for="StartDate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="EndDate" class="control-label"></label>
+                <label asp-for="EndDate" class="control-label">End Date</label>
                 <input asp-for="EndDate" class="form-control" type="date" />
                 <span asp-validation-for="EndDate" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="ApproverId" class="control-label"></label>
+                <label asp-for="ApproverId" class="control-label">Approver</label>
                 <select asp-for="ApproverId" class="form-control" asp-items="@(new SelectList(ViewBag.Approvers, "Value", "Text"))">
                 </select>
                 <span asp-validation-for="ApproverId" class="text-danger"></span>

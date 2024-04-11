@@ -61,7 +61,7 @@ namespace VacationManager.Controllers
             var userOptions = users.Select(u => new SelectListItem
             {
                 Value = u.Id.ToString(),
-                Text = $"{u.Username} - {u.FirstName} {u.LastName}"
+                Text = $"{u.FirstName} {u.LastName}"
             }).ToList();
 
             ViewBag.UserOptions = userOptions;

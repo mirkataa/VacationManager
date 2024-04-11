@@ -4,16 +4,15 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<h1>Add User's Paid Vacation days</h1>
 
-<h4>VacationDaysModel</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="UserId" class="control-label"></label>
+                <label asp-for="UserId" class="control-label">User</label>
                 <select asp-for="UserId" class="form-control">
                     <option value="">-- Select User --</option>
                     @foreach (var userOption in ViewBag.UserOptions)
@@ -29,7 +28,7 @@
                 <span asp-validation-for="Year" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="VacationDays" class="control-label"></label>
+                <label asp-for="VacationDays" class="control-label">Vacation Days</label>
                 <input asp-for="VacationDays" class="form-control" />
                 <span asp-validation-for="VacationDays" class="text-danger"></span>
             </div>

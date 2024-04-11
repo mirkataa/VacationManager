@@ -12,7 +12,7 @@
         .ToList();
 }
 
-<h1>Index</h1>
+<h1>Leave Request</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -38,19 +38,23 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.RequestCreationDate)
+                @* @Html.DisplayNameFor(model => model.RequestCreationDate) *@
+                Creation Date
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ApplicantId)
+               @*  @Html.DisplayNameFor(model => model.ApplicantId) *@
+               Applicant
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.StartDate)
+                @* @Html.DisplayNameFor(model => model.StartDate) *@
+                Start Date
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.EndDate)
+                End Date
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IsSickLeave)
+                @* @Html.DisplayNameFor(model => model.IsSickLeave) *@
+                Sick Leave
             </th>
             @* <th>
             @Html.DisplayNameFor(model => model.MedicalCertificate)
@@ -62,13 +66,15 @@
             @Html.DisplayNameFor(model => model.IsHalfDay)
             </th> *@
             <th>
-                @Html.DisplayNameFor(model => model.IsApproved)
+               @*  @Html.DisplayNameFor(model => model.IsApproved) *@
+               Approved
             </th>
             @* <th>
             @Html.DisplayNameFor(model => model.ApproverId)
             </th> *@
             <th>
-                @Html.DisplayNameFor(model => model.IsCompleted)
+                @* @Html.DisplayNameFor(model => model.IsCompleted) *@
+                Completed
             </th>
             <th></th>
         </tr>

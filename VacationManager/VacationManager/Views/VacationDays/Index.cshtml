@@ -4,7 +4,7 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Vacation Days</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -21,19 +21,19 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.UserId)
+                User
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Year)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.VacationDays)
+                Vacation Days
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.UsedDays)
+                Used Days
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.PendingDays)
+                Pending Days
             </th>
             <th></th>
         </tr>
@@ -51,7 +51,7 @@
                     {
                         if (user.Id == item.UserId)
                         {
-                            User = user.Username + " - " + user.FirstName + " " + user.LastName;
+                            User = user.FirstName + " " + user.LastName;
                             break;
                         }
                     }
