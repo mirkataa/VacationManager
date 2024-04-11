@@ -20,8 +20,13 @@ namespace VacationManager.Controllers
         }
 
         // GET: Projects
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
         {
+            var totalProjectsCount = await _context.Projects.CountAsync();
+
+            ViewBag.TotalCount = totalProjectsCount;
+            ViewBag.PageSize = pageSize;
+            ViewBag.CurrentPage = page;
             return View(await _context.Projects.ToListAsync());
         }
 

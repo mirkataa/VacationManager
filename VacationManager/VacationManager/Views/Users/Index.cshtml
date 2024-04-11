@@ -180,7 +180,6 @@
             var firstNameFilter = $('#firstNameFilter').val().toLowerCase();
             var lastNameFilter = $('#lastNameFilter').val().toLowerCase();
             var roleFilter = $('#roleFilter').val().toLowerCase();
-            console.log("roleFiler ROLQ: ", roleFilter);
 
             visibleRowIndexes = []; // Clear the array before filtering
 
@@ -189,13 +188,11 @@
                 var firstName = $(this).find('td:nth-child(2)').text().toLowerCase();
                 var lastName = $(this).find('td:nth-child(3)').text().toLowerCase();
                 var role = $(this).find('td:nth-child(4)').text().toLowerCase();
-                //  console.log("ROLQ: ", role);
 
                 if (username.includes(usernameFilter)
                     && firstName.includes(firstNameFilter)
                     && lastName.includes(lastNameFilter)
                     && role.includes(roleFilter)) {
-                    console.log("VS: ", role)
                     $(this).show();
                     visibleRowIndexes.push(index); // Store index if row is visible
                 } else {
@@ -205,8 +202,6 @@
 
             // Update totalRows based on filtered rows
             var totalRows = $('#tableBody tr:visible').length;
-            console.log("Redove; ", totalRows)
-            // console.log("TOTAL ROWS AFTER FILTER: ", totalRows);
             var currentPage = 1;
             var flag = true;
             var pageSize = parseInt($('#pageSizeSelector').val());
