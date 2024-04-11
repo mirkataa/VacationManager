@@ -110,14 +110,17 @@ namespace VacationManager.Areas.Identity.Pages.Account
 
             [Required]
             [Display(Name = "Username")]
+            [RegularExpression("^[A-Za-z][A-Za-z0-9_]{5,29}$", ErrorMessage = "Username must start with a letter and can only contain letters, numbers, or underscores (6-30 characters)")]
             public string Username { get; set; }
 
             [Required]
             [Display(Name = "First Name")]
+            [RegularExpression("^[A-Za-z]+$", ErrorMessage = "First Name can only contain letters")]
             public string FirstName { get; set; }
 
             [Required]
             [Display(Name = "Last Name")]
+            [RegularExpression("^[A-Za-z]+$", ErrorMessage = "Last Name can only contain letters")]
             public string LastName { get; set; }
 
             [Required]
