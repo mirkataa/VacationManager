@@ -20,9 +20,15 @@ namespace VacationManager.Controllers
         }
 
         // GET: Roles
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
         {
+            var totalRolesCount = await _context.Roles.CountAsync();
             var roles = await _context.Roles.Include(r => r.Users).ToListAsync();
+
+            ViewBag.TotalCount = totalRolesCount;
+            ViewBag.PageSize = pageSize;
+            ViewBag.CurrentPage = page;
+
             return View(roles);
         }
 
