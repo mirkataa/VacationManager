@@ -907,6 +907,57 @@ namespace VacationManager.Controllers
             var leaveRequest = await _context.LeaveRequests.FindAsync(id);
             if (leaveRequest != null)
             {
+                if (leaveRequest.IsPaid)
+                {
+                    var workDaysReturn = CalculateWeekdays(leaveRequest.StartDate, leaveRequest.EndDate);
+                    int currentYear = DateTime.Now.Year;
+                    int previousYear = currentYear - 1;
+                    var vacationDaysCurrentYear = _context.VacationDaysModel
+                        .SingleOrDefault(v => v.UserId == leaveRequest.ApplicantId && v.Year == currentYear);
+                    var vacationDaysPreviousYear = _context.VacationDaysModel
+                        .SingleOrDefault(v => v.UserId == leaveRequest.ApplicantId && v.Year == previousYear);
+
+                    if (!leaveRequest.IsHalfDay)
+                    {
+                        if (vacationDaysPreviousYear != null)
+                        {
+                            if (vacationDaysCurrentYear.PendingDays >= workDaysReturn)
+                            {
+                                vacationDaysCurrentYear.PendingDays -= workDaysReturn;
+                            }
+                            else
+                            {
+                                var sub = workDaysReturn - vacationDaysCurrentYear.PendingDays;
+                                vacationDaysCurrentYear.PendingDays = 0;
+                                vacationDaysPreviousYear.PendingDays -= sub;
+                            }
+                        }
+                        else
+                        {
+                            vacationDaysCurrentYear.PendingDays -= workDaysReturn;
+                        }
+                    }
+                    else
+                    {
+                        if (vacationDaysPreviousYear != null)
+                        {
+                            if (vacationDaysCurrentYear.PendingDays >= 0.5)
+                            {
+                                vacationDaysCurrentYear.PendingDays -= 0.5;
+                            }
+                            else
+                            {
+                                vacationDaysCurrentYear.PendingDays = 0;
+                                vacationDaysPreviousYear.PendingDays -= 0.5;
+                            }
+                        }
+                        else
+                        {
+                            vacationDaysCurrentYear.PendingDays -= 0.5;
+                        }
+                    }
+                    await _context.SaveChangesAsync();
+                }
                 _context.LeaveRequests.Remove(leaveRequest);
             }
 
