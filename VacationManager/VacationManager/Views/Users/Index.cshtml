@@ -17,6 +17,27 @@
     <button type="submit">Register New User</button>
 </form>
 
+<form id="filterForm">
+    <div class="form-group">
+        <label for="usernameFilter">Filter by Username:</label>
+        <input type="text" class="form-control" id="usernameFilter">
+    </div>
+    <div class="form-group">
+        <label for="firstNameFilter">Filter by First Name:</label>
+        <input type="text" class="form-control" id="firstNameFilter">
+    </div>
+    <div class="form-group">
+        <label for="lastNameFilter">Filter by Last Name:</label>
+        <input type="text" class="form-control" id="lastNameFilter">
+    </div>
+    <div class="form-group">
+        <label for="roleFilter">Filter by Role:</label>
+        <input type="text" class="form-control" id="roleFilter">
+    </div>
+    <button type="button" class="btn btn-primary" onclick="applyFilter()">Apply Filter</button>
+    <button type="button" class="btn btn-secondary" onclick="clearFilter()">Clear Filter</button>
+</form>
+
 <select id="pageSizeSelector">
     <option value="10">10</option>
     <option value="25">25</option>
@@ -118,61 +139,129 @@
 
 @section Scripts {
     <script>
+        // Define an array to store the indexes of visible rows
+        var visibleRowIndexes = [];
+        var flag = false;
+        // Define displayPageRows function
+        function displayPageRows(currentPage, pageSize, totalRows, visibleRowIndexes, flag) {
+            var startIndex = (currentPage - 1) * pageSize;
+            var endIndex = Math.min(startIndex + pageSize, totalRows);
+            if (!flag) {
+                $('#tableBody tr').hide(); // Hide all rows
+                $('#tableBody tr').slice(startIndex, endIndex).show(); // Show rows for the current page
+            }
+            else {
+                $('#tableBody tr').hide(); // Hide all rows
+                for (var i = startIndex; i < endIndex; i++) {
+                    $('#tableBody tr:eq(' + visibleRowIndexes[i] + ')').show(); // Show rows starting from startIndex to endIndex
+                }
+            }
+        }
+
+        // Define updateButtonVisibility function
+        function updateButtonVisibility(currentPage, pageSize, totalRows) {
+            if (currentPage >= Math.ceil(totalRows / pageSize)) {
+                $('#nextButton').hide(); // Hide "Next" button if on the last page
+            } else {
+                $('#nextButton').show();
+            }
+
+            if (currentPage == 1) {
+                $('#prevButton').hide();
+            } else {
+                $('#prevButton').show();
+            }
+        }
+
+        // Apply Filter function
+        function applyFilter() {
+            var usernameFilter = $('#usernameFilter').val().toLowerCase();
+            var firstNameFilter = $('#firstNameFilter').val().toLowerCase();
+            var lastNameFilter = $('#lastNameFilter').val().toLowerCase();
+            var roleFilter = $('#roleFilter').val().toLowerCase();
+            console.log("roleFiler ROLQ: ", roleFilter);
+
+            visibleRowIndexes = []; // Clear the array before filtering
+
+            $('tbody tr').each(function (index) {
+                var username = $(this).find('td:nth-child(1)').text().toLowerCase();
+                var firstName = $(this).find('td:nth-child(2)').text().toLowerCase();
+                var lastName = $(this).find('td:nth-child(3)').text().toLowerCase();
+                var role = $(this).find('td:nth-child(4)').text().toLowerCase();
+                //  console.log("ROLQ: ", role);
+
+                if (username.includes(usernameFilter)
+                    && firstName.includes(firstNameFilter)
+                    && lastName.includes(lastNameFilter)
+                    && role.includes(roleFilter)) {
+                    console.log("VS: ", role)
+                    $(this).show();
+                    visibleRowIndexes.push(index); // Store index if row is visible
+                } else {
+                    $(this).hide();
+                }
+            });
+
+            // Update totalRows based on filtered rows
+            var totalRows = $('#tableBody tr:visible').length;
+            console.log("Redove; ", totalRows)
+            // console.log("TOTAL ROWS AFTER FILTER: ", totalRows);
+            var currentPage = 1;
+            var flag = true;
+            var pageSize = parseInt($('#pageSizeSelector').val());
+            displayPageRows(currentPage, pageSize, totalRows, visibleRowIndexes, flag);
+            updateButtonVisibility(currentPage, pageSize, totalRows);
+        }
+
+        // Clear Filter function
+        function clearFilter() {
+            $('#usernameFilter, #firstNameFilter, #lastNameFilter, #roleFilter').val('');
+            $('tbody tr').show();
+
+            // Reset totalRows to the original count
+            var totalRows = $('#tableBody tr').length;
+            var currentPage = 1;
+            var pageSize = parseInt($('#pageSizeSelector').val());
+            var flag = false;
+            visibleRowIndexes = []; // Clear the array before filtering
+            displayPageRows(currentPage, pageSize, totalRows, visibleRowIndexes, flag);
+            updateButtonVisibility(currentPage, pageSize, totalRows);
+        }
+
+        // Document ready function
         $(document).ready(function () {
             var currentPage = 1;
             var pageSize = parseInt($('#pageSizeSelector').val());
             var totalRows = $('#tableBody tr').length; // total rows initially
-
-            // Function to display rows for the current page
-            function displayPageRows() {
-                var startIndex = (currentPage - 1) * pageSize;
-                var endIndex = Math.min(startIndex + pageSize, totalRows);
-                $('#tableBody tr').hide(); // Hide all rows
-                $('#tableBody tr').slice(startIndex, endIndex).show(); // Show rows for the current page
-            }
-
+            var flag = false;
+            visibleRowIndexes = []; // Clear the array before filtering
             // Event handler for changing page size
             $('#pageSizeSelector').change(function () {
                 pageSize = parseInt($(this).val());
                 currentPage = 1;
-                displayPageRows();
-                updateButtonVisibility();
+                displayPageRows(currentPage, pageSize, totalRows, visibleRowIndexes, flag);
+                updateButtonVisibility(currentPage, pageSize, totalRows);
             });
 
             // Event handler for previous button
             $('#prevButton').click(function () {
                 if (currentPage > 1) {
                     currentPage--;
-                    displayPageRows();
-                    updateButtonVisibility();
+                    displayPageRows(currentPage, pageSize, totalRows, visibleRowIndexes, flag);
+                    updateButtonVisibility(currentPage, pageSize, totalRows);
                 }
             });
 
             // Event handler for next button
             $('#nextButton').click(function () {
                 currentPage++;
-                displayPageRows();
-                updateButtonVisibility();
+                displayPageRows(currentPage, pageSize, totalRows, visibleRowIndexes, flag);
+                updateButtonVisibility(currentPage, pageSize, totalRows);
             });
 
-            // Function to update button visibility based on current page and total rows
-            function updateButtonVisibility() {
-                if (currentPage >= Math.ceil(totalRows / pageSize)) {
-                    $('#nextButton').hide(); // Hide "Next" button if on the last page
-                } else {
-                    $('#nextButton').show();
-                }
-
-                if (currentPage == 1) {
-                    $('#prevButton').hide();
-                } else {
-                    $('#prevButton').show();
-                }
-            }
-
             // Initial display
-            displayPageRows();
-            updateButtonVisibility();
+            displayPageRows(currentPage, pageSize, totalRows, visibleRowIndexes, flag);
+            updateButtonVisibility(currentPage, pageSize, totalRows);
         });
     </script>
 }
