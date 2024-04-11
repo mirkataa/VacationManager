@@ -17,6 +17,23 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+<form id="filterForm">
+    <div class="form-group">
+        <label for="creationDateFilter">Filter by Creation Date:</label>
+        <input type="date" class="form-control" id="creationDateFilter">
+    </div>
+    <button type="button" class="btn btn-primary" onclick="applyFilter()">Apply Filter</button>
+    <button type="button" class="btn btn-secondary" onclick="clearFilter()">Clear Filter</button>
+</form>
+
+<label for="pageSizeSelector">Page size:</label>
+<select id="pageSizeSelector">
+    <option value="10">10</option>
+    <option value="25">25</option>
+    <option value="50">50</option>
+</select>
+
 <table class="table">
     <thead>
         <tr>
@@ -56,7 +73,7 @@
             <th></th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="tableBody">
 @foreach (var item in Model) {
         <tr>
              <td>
@@ -152,3 +169,131 @@
 }
     </tbody>
 </table>
+
+<button id="prevButton">Previous</button>
+<button id="nextButton">Next</button>
+
+@section Scripts {
+    <script>
+        // Define an array to store the indexes of visible rows
+        var visibleRowIndexes = [];
+        var flag = false;
+        // Define displayPageRows function
+        function displayPageRows(currentPage, pageSize, totalRows, visibleRowIndexes, flag) {
+            var startIndex = (currentPage - 1) * pageSize;
+            var endIndex = Math.min(startIndex + pageSize, totalRows);
+            if (!flag) {
+                $('#tableBody tr').hide(); // Hide all rows
+                $('#tableBody tr').slice(startIndex, endIndex).show(); // Show rows for the current page
+            }
+            else {
+                $('#tableBody tr').hide(); // Hide all rows
+                for (var i = startIndex; i < endIndex; i++) {
+                    $('#tableBody tr:eq(' + visibleRowIndexes[i] + ')').show(); // Show rows starting from startIndex to endIndex
+                }
+            }
+        }
+
+        // Define updateButtonVisibility function
+        function updateButtonVisibility(currentPage, pageSize, totalRows) {
+            if (currentPage >= Math.ceil(totalRows / pageSize)) {
+                $('#nextButton').hide(); // Hide "Next" button if on the last page
+            } else {
+                $('#nextButton').show();
+            }
+
+            if (currentPage == 1) {
+                $('#prevButton').hide();
+            } else {
+                $('#prevButton').show();
+            }
+        }
+
+        // Apply Filter function
+        function applyFilter() {
+            var creationDateFilter = $('#creationDateFilter').val();
+
+            visibleRowIndexes = []; // Clear the array before filtering
+
+            $('tbody tr').each(function (index) {
+                var creationDate = $(this).find('td:nth-child(1)').text().trim();
+
+                // Convert CreationDate
+                var formattedCreationDate = formatDate(creationDate);
+
+                if (formattedCreationDate > creationDateFilter) {
+                    $(this).show();
+                    visibleRowIndexes.push(index); // Store index if row is visible
+                } else {
+                    $(this).hide();
+                }
+            });
+
+            // Update totalRows based on filtered rows
+            var totalRows = $('#tableBody tr:visible').length;
+
+            var currentPage = 1;
+            var flag = true;
+            var pageSize = parseInt($('#pageSizeSelector').val());
+            displayPageRows(currentPage, pageSize, totalRows, visibleRowIndexes, flag);
+            updateButtonVisibility(currentPage, pageSize, totalRows);
+        }
+
+        // Clear Filter function
+        function clearFilter() {
+            $('#creationDateFilter').val('');
+            $('tbody tr').show();
+
+            // Reset totalRows to the original count
+            var totalRows = $('#tableBody tr').length;
+            var currentPage = 1;
+            var pageSize = parseInt($('#pageSizeSelector').val());
+            var flag = false;
+            visibleRowIndexes = []; // Clear the array before filtering
+            displayPageRows(currentPage, pageSize, totalRows, visibleRowIndexes, flag);
+            updateButtonVisibility(currentPage, pageSize, totalRows);
+        }
+
+        // Function to format date YYY-MM-DD
+        function formatDate(dateString) {
+            var dateParts = dateString.split('-');
+            return dateParts[2] + '-' + dateParts[1] + '-' + dateParts[0];
+        }
+
+        // Document ready function
+        $(document).ready(function () {
+            var currentPage = 1;
+            var pageSize = parseInt($('#pageSizeSelector').val());
+            var totalRows = $('#tableBody tr').length; // total rows initially
+            var flag = false;
+            visibleRowIndexes = []; // Clear the array before filtering
+            // Event handler for changing page size
+            $('#pageSizeSelector').change(function () {
+                pageSize = parseInt($(this).val());
+                currentPage = 1;
+                displayPageRows(currentPage, pageSize, totalRows, visibleRowIndexes, flag);
+                updateButtonVisibility(currentPage, pageSize, totalRows);
+            });
+
+            // Event handler for previous button
+            $('#prevButton').click(function () {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayPageRows(currentPage, pageSize, totalRows, visibleRowIndexes, flag);
+                    updateButtonVisibility(currentPage, pageSize, totalRows);
+                }
+            });
+
+            // Event handler for next button
+            $('#nextButton').click(function () {
+                currentPage++;
+                displayPageRows(currentPage, pageSize, totalRows, visibleRowIndexes, flag);
+                updateButtonVisibility(currentPage, pageSize, totalRows);
+            });
+
+            // Initial display
+            displayPageRows(currentPage, pageSize, totalRows, visibleRowIndexes, flag);
+            updateButtonVisibility(currentPage, pageSize, totalRows);
+        });
+    </script>
+}

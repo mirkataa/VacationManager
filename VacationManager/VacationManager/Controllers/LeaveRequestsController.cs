@@ -20,8 +20,9 @@ namespace VacationManager.Controllers
         }
 
         // GET: LeaveRequests
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
         {
+            var totalRequestsCount = await _context.LeaveRequests.CountAsync();
             var leaveRequests = await _context.LeaveRequests.ToListAsync();
             var leaveRemove = await _context.LeaveRequests.Where(l => !l.IsCompleted).ToListAsync();
 
@@ -45,6 +46,10 @@ namespace VacationManager.Controllers
             var user = _context.Users.SingleOrDefault(u => u.Username == username);
 
             await UpdateIsAwayForUser(user.Id);
+
+            ViewBag.TotalCount = totalRequestsCount;
+            ViewBag.PageSize = pageSize;
+            ViewBag.CurrentPage = page;
 
             return View(leaveRequests);
         }
