@@ -20,9 +20,15 @@ namespace VacationManager.Controllers
         }
 
         // GET: Teams
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
         {
+            var totalTeamsCount = await _context.Teams.CountAsync();
+
             ViewBag.Context = _context;
+            ViewBag.TotalCount = totalTeamsCount;
+            ViewBag.PageSize = pageSize;
+            ViewBag.CurrentPage = page;
+
             return View(await _context.Teams.ToListAsync());
         }
 
