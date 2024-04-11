@@ -4,10 +4,9 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h1>Team Details</h1>
 
 <div>
-    <h4>TeamModel</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
@@ -26,7 +25,14 @@
             Team Leader
         </dt>
         <dd class="col-sm-10">
-            @ViewData["TeamLeaderName"]
+            @if (!string.IsNullOrEmpty(ViewData["TeamLeaderName"] as string))
+            {
+                @ViewData["TeamLeaderName"]
+            }
+            else
+            {
+                <span>No Team Leader</span>
+            }
         </dd>
     </dl>
 </div>

@@ -11,7 +11,7 @@
     </div>
 }
 
-<h1>Index</h1>
+<h1>Users</h1>
 
 <form asp-area="Identity" asp-page="/Account/Register" method="get">
     <button type="submit">Register New User</button>
@@ -52,25 +52,24 @@
                 @Html.DisplayNameFor(model => model.Username)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FirstName)
+                @* @Html.DisplayNameFor(model => model.FirstName) *@
+                First Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LastName)
+                @* @Html.DisplayNameFor(model => model.LastName) *@
+                Last Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.RoleId)
+                @* @Html.DisplayNameFor(model => model.RoleId) *@
+                Role
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TeamId)
+                @* @Html.DisplayNameFor(model => model.TeamId) *@
+                Team
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IsAway)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsHalfDay)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsSickLeave)
+                @* @Html.DisplayNameFor(model => model.IsAway) *@
+                Away
             </th>
             <th></th>
         </tr>
@@ -118,12 +117,6 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.IsAway)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsHalfDay)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsSickLeave)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

@@ -176,7 +176,7 @@ namespace VacationManager.Controllers
         // GET: Users/Create
         public IActionResult Create()
         {
-            return View();
+            return RedirectToAction(nameof(Index));
         }
 
         // POST: Users/Create
