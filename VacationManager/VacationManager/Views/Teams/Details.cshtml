@@ -41,6 +41,10 @@
             <li>
                 <span style="margin-right: 5px;">@user.FirstName</span>
                 @user.LastName
+                @if (user.IsAway)
+                {
+                    <span style="color: red;">Away</span>
+                }
                 @if (Model.Id != 1)
                 {
                     <div style="display: inline-block;">

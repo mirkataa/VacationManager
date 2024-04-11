@@ -30,6 +30,12 @@ namespace VacationManager.Controllers
                 await UpdateIsAwayForUser(leaveRequest.ApplicantId);
             }
 
+            var username = User.Identity.Name;
+
+            var user = _context.Users.SingleOrDefault(u => u.Username == username);
+
+            await UpdateIsAwayForUser(user.Id);
+
             return View(leaveRequests);
         }
 
