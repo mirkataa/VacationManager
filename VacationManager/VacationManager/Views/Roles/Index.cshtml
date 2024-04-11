@@ -4,17 +4,21 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Roles</h1>
+<head>
+    <link rel="stylesheet" href="~/css/RoleIndex.css"/>
+</head>
+
+<h1 align="center">ROLES</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary"><i class="fa fa-plus-circle"></i> Create New</a>
 </p>
 
 <div id="reminder" style="margin-bottom: 10px;">
     <strong>Reminder:</strong> The roles: CEO, Developer, Team Lead, and Unassigned cannot be deleted or edited.
 </div>
 
-<label for="pageSizeSelector">Page size:</label>
+<label for="pageSizeSelector">Number of rows:</label>
 <select id="pageSizeSelector">
     <option value="10">10</option>
     <option value="25">25</option>
@@ -49,17 +53,17 @@
                         string editAction = isEditable ? "Edit" : "#";
                         string deleteAction = isEditable ? "Delete" : "#";
                     }
-                    <a asp-action="@editAction" asp-route-id="@item.Id" onclick="return confirmDeleteOrEdit('@item.Name')">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="@deleteAction" asp-route-id="@item.Id" onclick="return confirmDeleteOrEdit('@item.Name')">Delete</a>
+                    <a asp-action="@editAction" asp-route-id="@item.Id" onclick="return confirmDeleteOrEdit('@item.Name')"><i class="fa fa-edit fa-lg"></i></a> |
+                    <a asp-action="Details" asp-route-id="@item.Id"><i class="fa fa-info-circle fa-lg"></i></a> |
+                    <a asp-action="@deleteAction" asp-route-id="@item.Id" onclick="return confirmDeleteOrEdit('@item.Name')"><i class="fa fa-trash fa-lg" aria-hidden="true"></i></a>
                 </td>
         </tr>
     }
     </tbody>
 </table>
 
-<button id="prevButton">Previous</button>
-<button id="nextButton">Next</button>
+<button id="prevButton" class="btn btn-secondary"><i class="fa fa-chevron-left icon"></i> Previous</button>
+<button id="nextButton" class="btn btn-secondary"><i class="fa fa-chevron-right icon"></i> Next</button>
 
 @section Scripts {
     <script>
