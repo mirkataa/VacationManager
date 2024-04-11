@@ -5,6 +5,7 @@
 h1 {
     color: #104c91;
 }
+
 /* Custom styling for the table */
 .table {
     width: 100%;
@@ -32,7 +33,6 @@ h1 {
     .table tbody tr:hover {
         background-color: #e9e9e9;
     }
-
 
 /* Custom styling for form inputs */
 .form-group {
@@ -131,4 +131,57 @@ select {
         border-color: #1f8ac0;
         outline: 0;
         box-shadow: 0 0 0 0.2rem rgba(31, 138, 192, 0.25);
+    }
+
+/* Custom styling for approve and reject buttons */
+.btn-approve,
+.btn-reject {
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    user-select: none;
+    border: 1px solid transparent;
+    padding: 0.25rem 0.5rem; 
+    font-size: 0.75rem;
+    line-height: 1.25;
+    border-radius: 0.25rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    margin-right: 0.25rem; 
+}
+
+.btn-approve {
+    color: #fff;
+    background-color: #28a745; /* Green color for approve button */
+    border-color: #28a745;
+}
+
+.btn-reject {
+    color: #fff;
+    background-color: #dc3545; /* Red color for reject button */
+    border-color: #dc3545;
+}
+
+.btn-approve:hover {
+    background-color: #218838; /* Darker green color on hover */
+    border-color: #1e7e34;
+}
+
+.btn-reject:hover {
+    background-color: #c82333; /* Darker red color on hover */
+    border-color: #bd2130;
+}
+
+/* Custom styling for button group */
+.button-group {
+    display: inline-block; 
+}
+
+    .button-group form {
+        display: inline; 
+    }
+
+    .button-group button {
+        margin-right: 0.5rem;
     }

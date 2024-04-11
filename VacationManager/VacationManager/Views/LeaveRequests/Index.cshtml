@@ -12,22 +12,28 @@
         .ToList();
 }
 
-<h1>Leave Request</h1>
+<head>
+    <link rel="stylesheet" href="~/css/LeaveRequestIndex.css" />
+</head>
+
+<h1 align="center">LEAVE REQUESTS</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary"><i class="fa fa-plus-circle"></i> Create New</a>
 </p>
 
 <form id="filterForm">
-    <div class="form-group">
+    <div class="form-group d-flex">
+        <div class="mr-3">
         <label for="creationDateFilter">Filter by Creation Date:</label>
         <input type="date" class="form-control" id="creationDateFilter">
-    </div>
-    <button type="button" class="btn btn-primary" onclick="applyFilter()">Apply Filter</button>
-    <button type="button" class="btn btn-secondary" onclick="clearFilter()">Clear Filter</button>
+        </div>
+        <button type="button" class="btn btn-primary mr-2 align-self-end" onclick="applyFilter()"><i class="fa fa-filter icon"></i> Apply Filter</button>
+        <button type="button" class="btn btn-secondary align-self-end" onclick="clearFilter()"><i class="fa fa-times icon"></i> Clear Filter</button>
+     </div>
 </form>
 
-<label for="pageSizeSelector">Page size:</label>
+<label for="pageSizeSelector">Number of rows:</label>
 <select id="pageSizeSelector">
     <option value="10">10</option>
     <option value="25">25</option>
@@ -130,45 +136,51 @@
                         {
                             if (approverbyRole.RoleId == 3 && ((user.RoleId == 1 && !usersOnVacation.Contains(user.Id)) || item.ApproverId == user.Id))
                             {
-                                <form asp-action="ApproveRequest" asp-route-id="@item.Id" method="post">
-                                    <button type="submit">Approve</button>
-                                </form>
+                                <div class="button-group">
+                                    <form asp-action="ApproveRequest" asp-route-id="@item.Id" method="post">
+                                        <button type="submit" class="btn-approve"><i class="fa fa-check"></i></button>
+                                    </form>
 
-                                <form asp-action="RejectRequest" asp-route-id="@item.Id" method="post">
-                                    <button type="submit">Reject</button>
-                                </form>
+                                    <form asp-action="RejectRequest" asp-route-id="@item.Id" method="post">
+                                        <button type="submit" class="btn-reject"><i class="fa fa-times"></i></button>
+                                    </form>
+                                </div>
                             }
                             else if (approverbyRole.RoleId == 1 && item.ApproverId == user.Id)
                             {
-                                <form asp-action="ApproveRequest" asp-route-id="@item.Id" method="post">
-                                    <button type="submit">Approve</button>
-                                </form>
+                                <div class="button-group">
+                                    <form asp-action="ApproveRequest" asp-route-id="@item.Id" method="post">
+                                        <button type="submit" class="btn-approve"><i class="fa fa-check"></i></button>
+                                    </form>
 
-                                <form asp-action="RejectRequest" asp-route-id="@item.Id" method="post">
-                                    <button type="submit">Reject</button>
-                                </form>
+                                    <form asp-action="RejectRequest" asp-route-id="@item.Id" method="post">
+                                        <button type="submit" class="btn-reject"><i class="fa fa-times"></i></button>
+                                    </form>
+                                </div>
                             }
                         }
                          if (item.ApproverId != null && usersOnVacation.Contains((int)item.ApproverId) && user.RoleId == 1 && !usersOnVacation.Contains(user.Id))
                         {
-                            <form asp-action="ApproveRequest" asp-route-id="@item.Id" method="post">
-                                <button type="submit">Approve</button>
-                            </form>
+                            <div class="button-group">
+                                <form asp-action="ApproveRequest" asp-route-id="@item.Id" method="post">
+                                    <button type="submit" class="btn-approve"><i class="fa fa-check"></i></button>
+                                </form>
 
-                            <form asp-action="RejectRequest" asp-route-id="@item.Id" method="post">
-                                <button type="submit">Reject</button>
-                            </form>
+                                <form asp-action="RejectRequest" asp-route-id="@item.Id" method="post">
+                                    <button type="submit" class="btn-reject"><i class="fa fa-times"></i></button>
+                                </form>
+                            </div>
                         }
                     }
                     @if (item.ApplicantId == user.Id && !item.IsCompleted)
                     {
-                        <a asp-action="Edit" asp-route-id="@item.Id">Edit|</a> 
-                        <a asp-action="Details" asp-route-id="@item.Id">Details|</a> 
-                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        <a asp-action="Edit" asp-route-id="@item.Id"><i class="fa fa-edit fa-lg"></i>|</a>
+                        <a asp-action="Details" asp-route-id="@item.Id"><i class="fa fa-info-circle fa-lg"></i>|</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id"><i class="fa fa-trash fa-lg" aria-hidden="true"></i></a>
                     }
                     else if (item.ApplicantId == user.Id || user.RoleId == 1)
                     {
-                        <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                        <a asp-action="Details" asp-route-id="@item.Id"><i class="fa fa-info-circle fa-lg"></i></a>
                     }
                 </td>
         </tr>
@@ -176,8 +188,8 @@
     </tbody>
 </table>
 
-<button id="prevButton">Previous</button>
-<button id="nextButton">Next</button>
+<button id="prevButton" class="btn btn-secondary"><i class="fa fa-chevron-left"></i> Previous</button>
+<button id="nextButton" class="btn btn-secondary"><i class="fa fa-chevron-right"></i> Next</button>
 
 @section Scripts {
     <script>
