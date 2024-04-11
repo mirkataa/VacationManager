@@ -166,7 +166,7 @@
                         <a asp-action="Details" asp-route-id="@item.Id">Details|</a> 
                         <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                     }
-                    else if (item.ApplicantId == user.Id)
+                    else if (item.ApplicantId == user.Id || user.RoleId == 1)
                     {
                         <a asp-action="Details" asp-route-id="@item.Id">Details</a>
                     }

@@ -12,9 +12,16 @@
     <dl class="row">
         <dt class="col-sm-2">Users:</dt>
         <dd class="col-sm-10">
-            @foreach (var user in Model.Users)
+            @if (Model.Users.Any())
             {
-                <div>@user.FirstName @user.LastName</div>
+                @foreach (var user in Model.Users)
+                {
+                    <div>@user.FirstName @user.LastName</div>
+                }
+            }
+            else
+            {
+                <div>There are no people with this role.</div>
             }
         </dd>
     </dl>

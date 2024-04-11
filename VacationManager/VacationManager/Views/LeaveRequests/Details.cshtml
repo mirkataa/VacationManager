@@ -14,27 +14,27 @@
             Request Creation Date
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RequestCreationDate)
+            @Model.RequestCreationDate.ToString("dd-MM-yyyy")
         </dd>
         <dt class = "col-sm-2">
             @* @Html.DisplayNameFor(model => model.ApplicantId) *@
             Applicant
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ApplicantId)
+            @Html.Raw(ViewBag.ApplicantName)
         </dd>
         <dt class = "col-sm-2">
             @* @Html.DisplayNameFor(model => model.StartDate) *@
             Start Date
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StartDate)
+            @Model.StartDate.ToString("dd-MM-yyyy")
         </dd>
         <dt class = "col-sm-2">
             End Date
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EndDate)
+            @Model.EndDate.ToString("dd-MM-yyyy")
         </dd>
         <dt class = "col-sm-2">
            Sick Leave
@@ -77,7 +77,7 @@
             Approver
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ApproverId)
+            @Html.Raw(ViewBag.ApproverName)
         </dd>
         <dt class = "col-sm-2">
             Completed

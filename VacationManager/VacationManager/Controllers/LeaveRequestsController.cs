@@ -259,6 +259,24 @@ namespace VacationManager.Controllers
                 return NotFound();
             }
 
+            var user = _context.Users.SingleOrDefault(u => u.Id == leaveRequest.ApplicantId);
+            
+            var applicantName = $"{user.FirstName} {user.LastName}";
+            ViewBag.ApplicantName = applicantName; // Pass the name to the view
+
+            var approver = _context.Users.SingleOrDefault(u => u.Id == leaveRequest.ApproverId);
+            var approverName = "";
+            if (approver != null) 
+            { 
+                 approverName = $"{user.FirstName} {user.LastName}";
+            }
+            else
+            {
+                 approverName = "Medical leaves do not have an approver.";
+            }
+
+            ViewBag.ApproverName = approverName;
+
             return View(leaveRequest);
         }
 
