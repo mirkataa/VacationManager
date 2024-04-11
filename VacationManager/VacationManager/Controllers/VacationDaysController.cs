@@ -20,10 +20,15 @@ namespace VacationManager.Controllers
         }
 
         // GET: VacationDays
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
         {
+            var totalEntriesCount = await _context.VacationDaysModel.CountAsync();
             var users = await _context.Users.ToListAsync();
+
             ViewBag.Users = users;
+            ViewBag.TotalCount = totalEntriesCount;
+            ViewBag.PageSize = pageSize;
+            ViewBag.CurrentPage = page;
 
             return View(await _context.VacationDaysModel.ToListAsync());
         }
