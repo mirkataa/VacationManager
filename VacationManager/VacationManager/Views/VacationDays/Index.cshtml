@@ -4,13 +4,17 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Vacation Days</h1>
+<head>
+    <link rel="stylesheet" href="~/css/VacationDaysIndex.css"/>
+</head>
+
+<h1 align="center">VACATION DAYS</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary"><i class="fa fa-plus-circle"></i> Create New</a>
 </p>
 
-<label for="pageSizeSelector">Page size:</label>
+<label for="pageSizeSelector">Number of rows:</label>
 <select id="pageSizeSelector">
     <option value="10">10</option>
     <option value="25">25</option>
@@ -71,7 +75,7 @@
                 @Html.DisplayFor(modelItem => item.PendingDays)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> 
+                <a asp-action="Edit" asp-route-id="@item.Id"><i class="fa fa-edit fa-lg"></i></a>
                 @* <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> *@
             </td>
@@ -80,8 +84,8 @@
     </tbody>
 </table>
 
-<button id="prevButton">Previous</button>
-<button id="nextButton">Next</button>
+<button id="prevButton" class="btn btn-secondary"><i class="fa fa-chevron-left icon"></i> Previous</button>
+<button id="nextButton" class="btn btn-secondary"><i class="fa fa-chevron-right icon"></i> Next</button>
 
 @section Scripts {
     <script>
