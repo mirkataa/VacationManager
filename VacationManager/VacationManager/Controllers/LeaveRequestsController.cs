@@ -23,11 +23,21 @@ namespace VacationManager.Controllers
         public async Task<IActionResult> Index()
         {
             var leaveRequests = await _context.LeaveRequests.ToListAsync();
+            var leaveRemove = await _context.LeaveRequests.Where(l => !l.IsCompleted).ToListAsync();
 
             // Update IsAway for each applicant
             foreach (var leaveRequest in leaveRequests)
             {
                 await UpdateIsAwayForUser(leaveRequest.ApplicantId);
+            }
+
+            DateTime today = DateTime.Today;
+            foreach (var rem in leaveRemove)
+            {
+                if (rem.StartDate <= today)
+                {
+                    await DeleteConfirmed(rem.Id);
+                }
             }
 
             var username = User.Identity.Name;
