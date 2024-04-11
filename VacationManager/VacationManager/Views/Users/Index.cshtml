@@ -11,34 +11,40 @@
     </div>
 }
 
-<h1>Users</h1>
+<head>
+    <link rel="stylesheet" href="~/css/UserIndex.css"/>
+</head>
+
+<h1 align="center">USERS</h1>
 
 <form asp-area="Identity" asp-page="/Account/Register" method="get">
-    <button type="submit">Register New User</button>
+    <button type="submit" class="btn btn-primary"><i class="fa fa-plus-circle"></i> Register New User</button>
 </form>
 
 <form id="filterForm">
-    <div class="form-group">
-        <label for="usernameFilter">Filter by Username:</label>
-        <input type="text" class="form-control" id="usernameFilter">
+    <div class="form-group d-flex">
+        <div class="mr-3">
+            <label for="usernameFilter">Filter by Username:</label>
+            <input type="text" class="form-control" id="usernameFilter">
+        </div>
+        <div class="mr-3">
+            <label for="firstNameFilter">Filter by First Name:</label>
+            <input type="text" class="form-control" id="firstNameFilter">
+        </div>
+        <div class="mr-3">
+            <label for="lastNameFilter">Filter by Last Name:</label>
+            <input type="text" class="form-control" id="lastNameFilter">
+        </div>
+        <div class="mr-3">
+            <label for="roleFilter">Filter by Role:</label>
+            <input type="text" class="form-control" id="roleFilter">
+        </div>
+        <button type="button" class="btn btn-primary mr-2 align-self-end" onclick="applyFilter()"><i class="fa fa-filter icon"></i> Apply Filter</button>
+        <button type="button" class="btn btn-secondary align-self-end" onclick="clearFilter()"><i class="fa fa-times icon"></i> Clear Filter</button>
     </div>
-    <div class="form-group">
-        <label for="firstNameFilter">Filter by First Name:</label>
-        <input type="text" class="form-control" id="firstNameFilter">
-    </div>
-    <div class="form-group">
-        <label for="lastNameFilter">Filter by Last Name:</label>
-        <input type="text" class="form-control" id="lastNameFilter">
-    </div>
-    <div class="form-group">
-        <label for="roleFilter">Filter by Role:</label>
-        <input type="text" class="form-control" id="roleFilter">
-    </div>
-    <button type="button" class="btn btn-primary" onclick="applyFilter()">Apply Filter</button>
-    <button type="button" class="btn btn-secondary" onclick="clearFilter()">Clear Filter</button>
 </form>
 
-<label for="pageSizeSelector">Page size:</label>
+<label for="pageSizeSelector">Number of rows:</label>
 <select id="pageSizeSelector">
     <option value="10">10</option>
     <option value="25">25</option>
@@ -119,17 +125,17 @@
                 @Html.DisplayFor(modelItem => item.IsAway)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id"><i class="fa fa-edit fa-lg"></i></a>  |
+                    <a asp-action="Details" asp-route-id="@item.Id"><i class="fa fa-info-circle fa-lg"></i></a>  |
+                    <a asp-action="Delete" asp-route-id="@item.Id"><i class="fa fa-trash fa-lg" aria-hidden="true"></i></a>
             </td>
         </tr>
 }
     </tbody>
 </table>
 
-<button id="prevButton">Previous</button>
-<button id="nextButton">Next</button>
+<button id="prevButton" class="btn btn-secondary"><i class="fa fa-chevron-left icon"></i> Previous</button>
+<button id="nextButton" class="btn btn-secondary"><i class="fa fa-chevron-right icon"></i> Next</button>
 
 @section Scripts {
     <script>
