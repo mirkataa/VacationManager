@@ -14,7 +14,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">VacationManager</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><b>VacationManager 🏖️</b></a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -22,7 +22,7 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-info" asp-area="" asp-controller="Home" asp-action="Index"><b>HOME</b></a>
                         </li>
                         @if (User.Identity.IsAuthenticated)
                         {
@@ -33,28 +33,28 @@
                                 if(loggedPerson.RoleId == 1 || loggedPerson.RoleId == 3)
                                 {
                                     <li class="nav-item">
-                                        <a class="nav-link text-dark" asp-area="" asp-controller="Teams" asp-action="Index">Teams</a>
+                                        <a class="nav-link text-info" asp-area="" asp-controller="Teams" asp-action="Index"><b>TEAMS</b></a>
                                     </li>
                                 }
                                 if(loggedPerson.RoleId == 1)
                                 {
                                     <li class="nav-item">
-                                        <a class="nav-link text-dark" asp-area="" asp-controller="Projects" asp-action="Index">Projects</a>
+                                        <a class="nav-link text-info" asp-area="" asp-controller="Projects" asp-action="Index"><b>PROJECTS</b></a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link text-dark" asp-area="" asp-controller="Roles" asp-action="Index">Roles</a>
+                                        <a class="nav-link text-info" asp-area="" asp-controller="Roles" asp-action="Index"><b>ROLES</b></a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Users</a>
+                                        <a class="nav-link text-info" asp-area="" asp-controller="Users" asp-action="Index"><b>USERS</b></a>
                                     </li>
                                 }
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="LeaveRequests" asp-action="Index">Leave Requests</a>
+                                    <a class="nav-link text-info" asp-area="" asp-controller="LeaveRequests" asp-action="Index"><b>LEAVE REQUEST</b></a>
                                 </li>
                                 if(loggedPerson.RoleId == 1)
                                 {
                                     <li class="nav-item">
-                                        <a class="nav-link text-dark" asp-area="" asp-controller="VacationDays" asp-action="Index">Vacation Days</a>
+                                        <a class="nav-link text-info" asp-area="" asp-controller="VacationDays" asp-action="Index"><b>VACATION DAYS</b></a>
                                     </li>
                                 }
                             }

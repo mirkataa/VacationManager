@@ -1,0 +1,27 @@
+﻿body {
+    background-image: url('/images/backImage.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+.quote-container {
+    text-align: center;
+    margin-top: 100px;
+}
+
+.quote {
+    color: #fcba03;
+    font-style: italic;
+    font-weight: bold;
+    font-size: 50px; 
+    text-shadow: 5px 5px #558ABB;
+}
+
+.login-message {
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+    margin-top: 20px; 
+    text-shadow: #FC0 1px 0 10px;
+}
