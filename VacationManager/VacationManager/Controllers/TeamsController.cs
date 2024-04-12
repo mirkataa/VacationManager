@@ -24,14 +24,30 @@ namespace VacationManager.Controllers
         // GET: Teams
         public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
         {
+            //var totalTeamsCount = await _context.Teams.CountAsync();
+
+            var username = User.Identity.Name;
+            var user = _context.Users.SingleOrDefault(u => u.Username == username);
             var totalTeamsCount = await _context.Teams.CountAsync();
+            var forTheView = await _context.Teams.ToListAsync();
+
+            if (user.RoleId == 1)
+            {
+                totalTeamsCount = await _context.Teams.CountAsync();
+                forTheView = await _context.Teams.ToListAsync();
+            }
+            else if (user.RoleId == 3)
+            {
+                totalTeamsCount = await _context.Teams.Where(l => l.TeamLeaderId == user.Id).CountAsync();
+                forTheView = await _context.Teams.Where(l => l.TeamLeaderId == user.Id).ToListAsync();
+            }
 
             ViewBag.Context = _context;
             ViewBag.TotalCount = totalTeamsCount;
             ViewBag.PageSize = pageSize;
             ViewBag.CurrentPage = page;
 
-            return View(await _context.Teams.ToListAsync());
+            return View(forTheView);
         }
 
         // GET: Teams/Details/5
