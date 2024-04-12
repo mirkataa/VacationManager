@@ -68,6 +68,16 @@ namespace VacationManager.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Check if there's already an entry for the selected name
+                var existingEntry = await _context.Roles
+                    .FirstOrDefaultAsync(v => v.Name == roleModel.Name);
+
+                if (existingEntry != null)
+                {  
+                    ModelState.AddModelError(string.Empty, "A role with this name already exists.");
+                    return View(roleModel);
+                }
+
                 _context.Add(roleModel);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

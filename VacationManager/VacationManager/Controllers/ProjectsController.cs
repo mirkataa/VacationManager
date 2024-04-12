@@ -74,6 +74,16 @@ namespace VacationManager.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Check if there's already an entry for the selected name
+                var existingEntry = await _context.Projects
+                    .FirstOrDefaultAsync(v => v.Name == project.Name);
+
+                if (existingEntry != null)
+                {
+                    ModelState.AddModelError(string.Empty, "A project with this name already exists.");
+                    return View(project);
+                }
+
                 _context.Add(project);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

@@ -130,6 +130,50 @@ namespace VacationManager.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Fetch the list of projects and team leaders from the database
+                var projects = _context.Projects.ToList();
+                // Fetch the list of users with Unassigned role
+                var teamLeaders = _context.Users.Where(u => u.RoleId == 4).ToList();
+
+                // Map the project and team leader names to SelectListItem for dropdowns
+                var projectItems = projects.Select(p => new SelectListItem
+                {
+                    Text = p.Name,
+                    Value = p.Id.ToString()
+                });
+
+                var teamLeaderItems = teamLeaders.Select(t => new SelectListItem
+                {
+                    Text = t.FirstName + " " + t.LastName,
+                    Value = t.Id.ToString()
+                });
+
+                // Add an option for "No Project" with a null value
+                projectItems = new List<SelectListItem>
+            {
+                new SelectListItem { Text = "No Project", Value = "" }
+            }.Concat(projectItems);
+
+                // Add an option for "No Team Leader" with a null value
+                teamLeaderItems = new List<SelectListItem>
+            {
+                new SelectListItem { Text = "No Team Leader", Value = "" }
+            }.Concat(teamLeaderItems);
+
+                // Pass the SelectListItem collections to the ViewBag
+                ViewBag.Projects = projectItems;
+                ViewBag.TeamLeaders = teamLeaderItems;
+
+                // Check if there's already an entry for the selected name
+                var existingEntry = await _context.Teams
+                    .FirstOrDefaultAsync(v => v.Name == teamModel.Name);
+
+                if (existingEntry != null)
+                {
+                    ModelState.AddModelError(string.Empty, "A team with this name already exists.");
+                    return View(teamModel);
+                }
+
                 // Add the team to the context
                 _context.Add(teamModel);
                 await _context.SaveChangesAsync();
@@ -181,6 +225,8 @@ namespace VacationManager.Controllers
                         await _context.SaveChangesAsync();
                     }
                 }
+
+                
 
                 return RedirectToAction(nameof(Index));
             }
