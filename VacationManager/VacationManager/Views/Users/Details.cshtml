@@ -1,7 +1,16 @@
-﻿@model VacationManager.Models.UserModel
+﻿@inject VacationManager.Data.ApplicationDbContext _context
+@model VacationManager.Models.UserModel
 
 @{
     ViewData["Title"] = "Details";
+    var username = User.Identity.Name;
+    var loggedPerson = _context.Users.SingleOrDefault(u => u.Username == username);
+    if (loggedPerson.RoleId != 1)
+    {
+        <script>
+            window.location.href = "/Home/Index";
+        </script>
+    }
 }
 
 <h1>User Details</h1>
