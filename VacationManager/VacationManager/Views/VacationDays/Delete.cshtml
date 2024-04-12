@@ -1,7 +1,15 @@
-﻿@model VacationManager.Models.VacationDaysModel
+﻿@inject VacationManager.Data.ApplicationDbContext _context
+@model VacationManager.Models.VacationDaysModel
 
 @{
     ViewData["Title"] = "Delete";
+    var username = User.Identity.Name;
+    var loggedPerson = _context.Users.SingleOrDefault(u => u.Username == username);
+    
+        <script>
+            window.location.href = "/Home/Index";
+        </script>
+    
 }
 
 <h1>Delete</h1>
