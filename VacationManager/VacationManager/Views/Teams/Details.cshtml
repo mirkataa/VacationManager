@@ -1,7 +1,10 @@
-﻿@model VacationManager.Models.TeamModel
+﻿@inject VacationManager.Data.ApplicationDbContext _context
+@model VacationManager.Models.TeamModel
 
 @{
     ViewData["Title"] = "Details";
+    var username = User.Identity.Name;
+    var loggedPerson = _context.Users.SingleOrDefault(u => u.Username == username);
 }
 
 <h1>Team Details</h1>
@@ -57,7 +60,10 @@
                         <form asp-action="RemoveDeveloper" asp-controller="Teams" onsubmit="return confirm('Are you sure you want to remove this developer?');">
                             <input type="hidden" name="teamId" value="@Model.Id" />
                             <input type="hidden" name="userId" value="@user.Id" />
-                            <button type="submit" class="btn btn-link">Remove</button>
+                            @if(loggedPerson.RoleId == 1)
+                            {
+                                <button type="submit" class="btn btn-link">Remove</button>
+                            }
                         </form>
                     </div>
                 }
@@ -70,7 +76,7 @@ else
     <p>No team members found.</p>
 }
 
-@if (Model.Id != 1)
+@if (Model.Id != 1 && loggedPerson.RoleId == 1)
 {
     <h4>Add Developer</h4>
     <form asp-action="AddDeveloper" asp-controller="Teams">

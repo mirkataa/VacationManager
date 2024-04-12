@@ -1,8 +1,17 @@
 ﻿@using VacationManager.Data
+@inject VacationManager.Data.ApplicationDbContext _context
 @model IEnumerable<VacationManager.Models.TeamModel>
 
 @{
     ViewData["Title"] = "Index";
+    var username = User.Identity.Name;
+    var user = _context.Users.SingleOrDefault(u => u.Username == username);
+    if(user.RoleId != 1 && user.RoleId != 3)
+    {
+         <script>
+                window.location.href = "/Home/Index";
+        </script>
+    }
 }
 
 <head>
@@ -11,9 +20,11 @@
 
 <h1 align ="center">TEAMS</h1>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary"><i class="fa fa-plus-circle"></i> Create New</a>
-</p>
+@if(user.RoleId == 1){
+    <p>
+        <a asp-action="Create" class="btn btn-primary"><i class="fa fa-plus-circle"></i> Create New</a>
+    </p>
+}
 
 <form id="filterForm">
     <div class="form-group d-flex">
@@ -94,9 +105,16 @@
                         string editAction = isEditable ? "Edit" : "#";
                         string deleteAction = isEditable ? "Delete" : "#";
                     }
-                    <a asp-action="@editAction" asp-route-id="@item.Id" onclick="return confirmDeleteOrEdit('@item.Name')"><i class="fa fa-edit fa-lg"></i></a>  |
-                    <a asp-action="Details" asp-route-id="@item.Id"><i class="fa fa-info-circle fa-lg"></i></a>  |
-                    <a asp-action="@deleteAction" asp-route-id="@item.Id" onclick="return confirmDeleteOrEdit('@item.Name')"><i class="fa fa-trash fa-lg" aria-hidden="true"></i></a>
+                    @if(user.RoleId == 1)
+                    {
+                        <a asp-action="@editAction" asp-route-id="@item.Id" onclick="return confirmDeleteOrEdit('@item.Name')"><i class="fa fa-edit fa-lg"></i></a>  
+                        <a asp-action="Details" asp-route-id="@item.Id"><i class="fa fa-info-circle fa-lg"></i></a>  
+                        <a asp-action="@deleteAction" asp-route-id="@item.Id" onclick="return confirmDeleteOrEdit('@item.Name')"><i class="fa fa-trash fa-lg" aria-hidden="true"></i></a>
+                    }
+                    else
+                    {
+                        <a asp-action="Details" asp-route-id="@item.Id"><i class="fa fa-info-circle fa-lg"></i></a>
+                    }
                 </td>
             </tr>
         }
