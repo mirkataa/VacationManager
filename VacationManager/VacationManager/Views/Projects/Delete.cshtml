@@ -1,7 +1,16 @@
-﻿@model VacationManager.Models.Project
+﻿@inject VacationManager.Data.ApplicationDbContext _context
+@model VacationManager.Models.Project
 
 @{
     ViewData["Title"] = "Delete";
+    var username = User.Identity.Name;
+    var user = _context.Users.SingleOrDefault(u => u.Username == username);
+    if (user.RoleId != 1)
+    {
+        <script>
+            window.location.href = "/Home/Index";
+        </script>
+    }
 }
 
 <h1>Delete</h1>
