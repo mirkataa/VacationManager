@@ -5,6 +5,12 @@
     ViewData["Title"] = "Details";
     var username = User.Identity.Name;
     var loggedPerson = _context.Users.SingleOrDefault(u => u.Username == username);
+    if (loggedPerson.RoleId != 1 && loggedPerson.RoleId != 3)
+    {
+        <script>
+            window.location.href = "/Home/Index";
+        </script>
+    }
 }
 
 <h1>Team Details</h1>
