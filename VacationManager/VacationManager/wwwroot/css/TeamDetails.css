@@ -1,0 +1,78 @@
+﻿body {
+    background-color: #f2f2f2;
+}
+
+h1 {
+    color: #104c91;
+    text-align: center;
+}
+
+.row {
+    margin-top: 1.5rem;
+}
+
+.col-sm-2,
+.col-sm-10 {
+    display: inline-block;
+    vertical-align: top;
+}
+
+/* Styling for team members */
+h4 {
+    color: #104c91;
+    margin-top: 1.5rem;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    margin-bottom: 0.5rem;
+}
+
+.remove-button {
+    margin-left: 5px;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #104c91;
+    border-color: #104c91;
+}
+
+    .btn-primary:hover {
+        color: #fff;
+        background-color: #1f8ac0;
+        border-color: #1f8ac0;
+    }
+
+/* Styling for Add Developer section */
+.add-developer-container {
+    margin-top: 1rem;
+}
+
+    .add-developer-container select {
+        margin-right: 1rem;
+    }
+
+/* Styling for navigation links */
+.navigation-links {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+    .navigation-links a {
+        margin-right: 1rem;
+        color: #104c91;
+        text-decoration: none;
+    }
+
+        .navigation-links a:hover {
+            text-decoration: underline;
+        }
+
+.foot{
+    padding-top: 30px;
+}

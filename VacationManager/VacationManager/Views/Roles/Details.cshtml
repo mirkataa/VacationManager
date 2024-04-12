@@ -13,10 +13,14 @@
     }
 }
 
-<h1>Details</h1>
+<head>
+    <link rel="stylesheet" href="~/css/TeamDetails.css" />
+</head>
+
+<h1><i class="fa fa-info-circle"></i> Role Details</h1>
 
 <div>
-    <h4>Role: @Model.Name</h4>
+    <h4 align="center">Role: @Model.Name</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">Users:</dt>
@@ -35,8 +39,8 @@
         </dd>
     </dl>
     <div>
-        <a asp-action="Edit" asp-route-id="@Model.Id" onclick="return confirmDeleteOrEdit('@Model.Name')">Edit</a> |
-        <a asp-action="Index">Back to List</a>
+        <a asp-action="Edit" asp-route-id="@Model.Id" onclick="return confirmDeleteOrEdit('@Model.Name')"><i class="fa fa-edit"></i> Edit</a> |
+        <a asp-action="Index"><i class="fa fa-chevron-circle-left"></i> Back to List</a>
     </div>
 </div>
 

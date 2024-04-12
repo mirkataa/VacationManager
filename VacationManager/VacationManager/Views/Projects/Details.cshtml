@@ -13,7 +13,11 @@
     }
 }
 
-<h1>Project Details</h1>
+<head>
+    <link rel="stylesheet" href="~/css/TeamDetails.css" />
+</head>
+
+<h1><i class="fa fa-info-circle"></i> Project Details</h1>
 
 <div>
     <hr />
@@ -46,7 +50,7 @@
                     <form asp-action="RemoveTeam" asp-controller="Projects" onsubmit="return confirm('Are you sure you want to remove this team?');">
                         <input type="hidden" name="projectId" value="@Model.Id" />
                         <input type="hidden" name="teamId" value="@team.Id" />
-                        <button type="submit" class="btn btn-link">Remove</button>
+                        <button type="submit" class="btn btn-link"><i class="fa fa-minus-square" aria-hidden="true" style="color: red"></i></button>
                     </form>
                 </div>
             </li>
@@ -67,12 +71,12 @@ else
             <option value="@team.Id">@team.Name</option>
         }
     </select>
-    <button type="submit">Add Team</button>
+    <button type="submit" class="btn-primary"><i class="fa fa-plus" aria-hidden="true"></i> Add Team</button>
 </form>
 
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="foot">
+    <a asp-action="Edit" asp-route-id="@Model?.Id"><i class="fa fa-edit"></i> Edit</a> |
+    <a asp-action="Index"><i class="fa fa-chevron-circle-left"></i> Back to List</a>
 </div>
 
 @section Scripts {

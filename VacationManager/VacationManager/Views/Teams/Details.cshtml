@@ -13,7 +13,11 @@
     }
 }
 
-<h1>Team Details</h1>
+<head>
+    <link rel="stylesheet" href="~/css/TeamDetails.css" />
+</head>
+
+<h1><i class="fa fa-info-circle"></i> Team Details</h1>
 
 <div>
     <hr />
@@ -47,7 +51,7 @@
 </div>
 
 
-<h4>Team Members</h4>
+<h4><i class="fa fa-users"></i> Team Members</h4>
 @if (Model.Developers != null && Model.Developers.Any())
 {
     <ul>
@@ -62,13 +66,13 @@
                 }
                 @if (Model.Id != 1)
                 {
-                    <div style="display: inline-block;">
+                     <div style="display: inline-block;"> 
                         <form asp-action="RemoveDeveloper" asp-controller="Teams" onsubmit="return confirm('Are you sure you want to remove this developer?');">
                             <input type="hidden" name="teamId" value="@Model.Id" />
                             <input type="hidden" name="userId" value="@user.Id" />
                             @if(loggedPerson.RoleId == 1)
                             {
-                                <button type="submit" class="btn btn-link">Remove</button>
+                                <button type="submit" class="btn btn-link"><i class="fa fa-user-times" aria-hidden="true" style="color: red"></i></button>
                             }
                         </form>
                     </div>
@@ -84,6 +88,7 @@ else
 
 @if (Model.Id != 1 && loggedPerson.RoleId == 1)
 {
+    <div class="add-developer-container">
     <h4>Add Developer</h4>
     <form asp-action="AddDeveloper" asp-controller="Teams">
         <input type="hidden" name="teamId" value="@Model.Id" />
@@ -93,11 +98,12 @@ else
                 <option value="@user.Id">@user.FirstName @user.LastName</option>
             }
         </select>
-        <button type="submit">Add Developer</button>
+            <button type="submit" class="btn-primary"><i class="fa fa-user-plus"></i> Add Developer</button>
     </form>
+    </div>
 }
 
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="foot">
+    <a asp-action="Edit" asp-route-id="@Model?.Id"><i class="fa fa-edit"></i> Edit</a> |
+    <a asp-action="Index"><i class="fa fa-chevron-circle-left"></i> Back to List</a>
 </div>
