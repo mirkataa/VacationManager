@@ -24,7 +24,35 @@ namespace VacationManager.Controllers
         // GET: LeaveRequests
         public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
         {
+            var username = User.Identity.Name;
+            var user = _context.Users.SingleOrDefault(u => u.Username == username);
             var totalRequestsCount = await _context.LeaveRequests.CountAsync();
+            var forTheView = await _context.LeaveRequests.ToListAsync();
+            if (user.RoleId == 1)
+            {
+                totalRequestsCount = await _context.LeaveRequests.CountAsync();
+                forTheView = await _context.LeaveRequests.ToListAsync();
+            }
+            else if (user.RoleId == 3)
+            {
+                totalRequestsCount = await _context.LeaveRequests.Where(l => l.ApplicantId == user.Id).CountAsync();
+                forTheView = await _context.LeaveRequests.Where(l => l.ApplicantId == user.Id).ToListAsync();
+                var userTeam = _context.Teams.Include(t => t.Developers).FirstOrDefault(t => t.TeamLeaderId == user.Id);
+                
+                foreach (var dev in userTeam.Developers)
+                {
+                    var devRequests = _context.LeaveRequests.Where(l => l.ApplicantId == dev.Id).ToList();
+                    var devRequestsCount = _context.LeaveRequests.Where(l => l.ApplicantId == dev.Id).Count();
+                    totalRequestsCount += devRequestsCount;
+                    forTheView.AddRange(devRequests);
+                }
+            }
+            else
+            {
+                totalRequestsCount = await _context.LeaveRequests.Where(l => l.ApplicantId == user.Id).CountAsync();
+                forTheView = await _context.LeaveRequests.Where(l => l.ApplicantId == user.Id).ToListAsync();
+            }
+
             var leaveRequests = await _context.LeaveRequests.ToListAsync();
             var leaveRemove = await _context.LeaveRequests.Where(l => !l.IsCompleted).ToListAsync();
 
@@ -43,17 +71,13 @@ namespace VacationManager.Controllers
                 }
             }
 
-            var username = User.Identity.Name;
-
-            var user = _context.Users.SingleOrDefault(u => u.Username == username);
-
             await UpdateIsAwayForUser(user.Id);
 
             ViewBag.TotalCount = totalRequestsCount;
             ViewBag.PageSize = pageSize;
             ViewBag.CurrentPage = page;
 
-            return View(leaveRequests);
+            return View(forTheView);
         }
 
         [HttpPost]

@@ -54,7 +54,7 @@
                     <option value="">Select Team</option>
                     @foreach (var team in Model.Teams)
                     {
-                        <option value="@team.Id">@team.Name</option>
+                        <option value="@team.Id" data-team-leader-id="@team.TeamLeaderId">@team.Name</option>
                     }
                 </select>
                 <label asp-for="Input.TeamId">Team</label>
@@ -133,8 +133,8 @@
                
                 // Iterate over each option and hide teams with a team lead
                 options.forEach(function (option) {
-                    var teamLeaderId = parseInt(option.dataset.teamLeaderId);
-                    if (teamLeaderId != null || option.value === '1')
+                    var teamLeaderId = option.dataset.teamLeaderId;
+                    if (teamLeaderId !== "" || option.value === '1')
                     {
                         option.style.display = 'none';
                     } else {
