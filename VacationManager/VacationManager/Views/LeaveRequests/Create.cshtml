@@ -10,6 +10,11 @@
     </div>
 }
 
+<head>
+    <link rel="stylesheet" href="~/css/LeaveRequestCreate.css" />
+</head>
+
+
 <div id="button-container">
     <button id="normal-leave-button">Normal Leave</button>
     <button id="medical-leave-button">Medical Leave</button>
@@ -29,7 +34,7 @@
 
         <!-- Fields for normal leave -->
         @* <div id="normal-leave-fields" style="display: none;"> *@
-        <h1>Formal Request</h1>
+        <h1 >Formal Request</h1>
 
         <div class="row">
             <div class="col-md-6">
@@ -113,7 +118,7 @@
     </form>
     <form id="medical-leave-form" asp-action="Create" enctype="multipart/form-data" style="display: none;">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <h1>Medical Leave</h1>
+        <h1 align="center">Medical Leave</h1>
         <!-- Common fields for both normal and medical leave -->
         <div class="form-group" style="display: none;">
             <label asp-for="RequestCreationDate" class="control-label"></label>
@@ -188,7 +193,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i> Back to List</a>
 </div>
 
 @section Scripts {

@@ -1,0 +1,93 @@
+﻿body {
+    background-color: #f2f2f2;
+}
+
+h1 {
+    color: #104c91;
+}
+/* Button Container */
+#button-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#normal-leave-button,
+#medical-leave-button {
+    margin-right: 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    background-color: #104c91;
+    border-color: #104c91;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+    #normal-leave-button:hover,
+    #medical-leave-button:hover {
+        color: #fff;
+        background-color: #1f8ac0;
+        border-color: #1f8ac0;
+    }
+
+/* Form Container */
+#form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#normal-leave-form,
+#medical-leave-form {
+    width: 80%;
+    max-width: 1000px;
+    padding: 20px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+    margin-bottom: 20px;
+}
+
+/* Form Fields */
+.form-group {
+    margin-bottom: 5px;
+}
+
+.control-label {
+    font-weight: bold;
+}
+
+.form-control {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.form-check-label {
+    font-weight: normal;
+}
+
+.btn-primary {
+    margin-top:5px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    background-color: #104c91;
+    border-color: #104c91;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+    .btn-primary:hover {
+        color: #fff;
+        background-color: #1f8ac0;
+        border-color: #1f8ac0;
+    }
