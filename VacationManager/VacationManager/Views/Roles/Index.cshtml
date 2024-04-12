@@ -1,7 +1,16 @@
-﻿@model IEnumerable<VacationManager.Models.RoleModel>
+﻿@inject VacationManager.Data.ApplicationDbContext _context
+@model IEnumerable<VacationManager.Models.RoleModel>
 
 @{
     ViewData["Title"] = "Index";
+    var username = User.Identity.Name;
+    var user = _context.Users.SingleOrDefault(u => u.Username == username);
+    if (user.RoleId != 1)
+    {
+        <script>
+            window.location.href = "/Home/Index";
+        </script>
+    }
 }
 
 <head>

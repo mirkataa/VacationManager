@@ -1,7 +1,16 @@
-﻿@model VacationManager.Models.RoleModel
+﻿@inject VacationManager.Data.ApplicationDbContext _context
+@model VacationManager.Models.RoleModel
 
 @{
     ViewData["Title"] = "Create";
+    var username = User.Identity.Name;
+    var loggedPerson = _context.Users.SingleOrDefault(u => u.Username == username);
+    if (loggedPerson.RoleId != 1)
+    {
+        <script>
+            window.location.href = "/Home/Index";
+        </script>
+    }
 }
 
 <h1>Create role</h1>
