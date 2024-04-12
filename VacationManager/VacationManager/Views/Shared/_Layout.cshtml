@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
+    @inject VacationManager.Data.ApplicationDbContext _context
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - VacationManager</title>
@@ -25,24 +26,38 @@
                         </li>
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Teams" asp-action="Index">Teams</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Projects" asp-action="Index">Projects</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Roles" asp-action="Index">Roles</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Users</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="LeaveRequests" asp-action="Index">Leave Requests</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="VacationDays" asp-action="Index">Vacation Days</a>
-                            </li>
+                            if (User.Identity.Name != "dummyCEO")
+                            {
+                                var username = User.Identity.Name;
+                                var loggedPerson = _context.Users.SingleOrDefault(u => u.Username == username);
+                                if(loggedPerson.RoleId == 1 || loggedPerson.RoleId == 3)
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-area="" asp-controller="Teams" asp-action="Index">Teams</a>
+                                    </li>
+                                }
+                                if(loggedPerson.RoleId == 1)
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-area="" asp-controller="Projects" asp-action="Index">Projects</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-area="" asp-controller="Roles" asp-action="Index">Roles</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Users</a>
+                                    </li>
+                                }
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="LeaveRequests" asp-action="Index">Leave Requests</a>
+                                </li>
+                                if(loggedPerson.RoleId == 1)
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-area="" asp-controller="VacationDays" asp-action="Index">Vacation Days</a>
+                                    </li>
+                                }
+                            }
                         }
                     </ul>
                     <partial name="_LoginPartial" />
