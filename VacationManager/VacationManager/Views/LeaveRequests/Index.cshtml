@@ -178,7 +178,7 @@
                         <a asp-action="Details" asp-route-id="@item.Id"><i class="fa fa-info-circle fa-lg"></i>|</a>
                         <a asp-action="Delete" asp-route-id="@item.Id"><i class="fa fa-trash fa-lg" aria-hidden="true"></i></a>
                     }
-                    else if (item.ApplicantId == user.Id || user.RoleId == 1)
+                    else if (item.ApplicantId == user.Id || user.RoleId == 1 || user.RoleId == 3)
                     {
                         <a asp-action="Details" asp-route-id="@item.Id"><i class="fa fa-info-circle fa-lg"></i></a>
                     }
