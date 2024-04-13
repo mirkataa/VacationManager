@@ -1,7 +1,7 @@
 # Vacation Manager
 
 ## Overview
-This project is a Vacation Manager system designed for managing users vacation days, projects, teams, roles, and leave requests within an organization. It allows users to submit requests for paid, unpaid, and sick leave, which must be approved by their team leader or the CEO of the company.
+This project is a Vacation Manager system designed for managing users' vacation days, projects, teams, roles, and leave requests within an organization. It allows users to submit requests for paid, unpaid, and sick leave, which must be approved by their team leader or the CEO of the company.
 
 ## Technology Stack
 - **.NET 8**: The project is developed using  .NET 8 and Entity Framework (Visual Studio 2022).
@@ -32,12 +32,12 @@ This project is a Vacation Manager system designed for managing users vacation d
 - Users can submit and view leave requests for paid, unpaid, and sick leave.
 - CRUD operations for users are available, accessible only to users with the "CEO" role.
 - Users can be filtered and displayed in paginated views.
-- In the users Details page, the team of the user could be changed based on his role. Again this action is accessible only to users with the "CEO" role.
+- In the users' Details page, the team of the user could be changed based on his role. Again this action is accessible only to users with the "CEO" role.
 
 ### Roles
 - Roles include "CEO", "Developer", "Team Lead", and "Unassigned".
 - Each role has assigned users.
-- CRUD operations for roles are available, accessible to users with the "CEO" role.
+- CRUD operations for roles are available to users with the "CEO" role.
 
 ### Teams
 - Each user can belong to a team.
@@ -51,13 +51,13 @@ This project is a Vacation Manager system designed for managing users vacation d
 - In the projects Details page, teams could be added or removed. Again this action is accessible only to users with the "CEO" role.
 
 ### Leave Requests
-- Users can submit leave requests specifying dates of absence, half-day leave option, and approver (the team lead of his team, or the CEO if the team lead is absented).
+- Users can submit leave requests specifying dates of absence, half-day leave option, and approver (the team lead of his team, or the CEO if the team lead is absent).
 - Sick leave requests require an attached medical certificate.
-- Leave requests can only be approved by higher-ranking employees who are not absented.
-- Users can view, delete, edit, and submit leave requests.(Delete and edit only if the request has not been reviewed).
+- Leave requests can only be approved by higher-ranking employees who are not absent.
+- Users can view, delete, edit, and submit leave requests. (Delete and edit only if the request has not been reviewed).
 - Pagination and filtering by date are supported.
-- Leave Requests which have not been reviewed by the time of the first day of absence are being automatically deleted and if the request is for paid leave, the days are returned and not marked as used. 
-- If the user is on leave(approved) and create a sick leave (the period of which falls within the range of the vacation leave), then the days which have not been used from that approved vacation leave are returned to the user and not marked as used. 
+- Leave Requests which have not been reviewed by the time of the first day of absence are automatically deleted and if the request is for paid leave, the days are returned and not marked as used. 
+- If the user is on leave(approved) and creates a sick leave (the period of which falls within the range of the vacation leave), then the days which have not been used from that approved vacation leave are returned to the user and not marked as used. 
 - Sick Leaves are being approved immediately after their creation.
 - The CEO's leave request can only be approved by another CEO
 - Days of paid leave, which has not yet been approved, are stored as pending. 
@@ -66,7 +66,7 @@ This project is a Vacation Manager system designed for managing users vacation d
 - All forms in the web application are validated to prevent empty inputs and ensure data integrity.
 - Negative dates and excessively long strings are not allowed.
 
-## Access of the different roles:
+## Role-based access control:
 ### CEO: 
 - Has access to all pages and functionalities.
 - ***Only he can Register new users.***
@@ -74,7 +74,7 @@ This project is a Vacation Manager system designed for managing users vacation d
 - Has access to the Teams pages (he could view only his team data)
 - Has access to the Leave Requests pages (he could also review the leave requests of the members of his team and see his own requests)
 ### Developer and Unassigned
-- Have access only to there own Leave Requests 
+- Have access only to their own Leave Requests 
 
 ## Contributors
 - Mirena Koleva
